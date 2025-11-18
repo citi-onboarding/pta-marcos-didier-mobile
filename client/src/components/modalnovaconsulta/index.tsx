@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { time } from "console";
 
-export default function Modalnovaconsulta() {
+export default function ModalNovaConsulta() {
   type FormData = {
     tipodeconsulta: string;
     data: string;

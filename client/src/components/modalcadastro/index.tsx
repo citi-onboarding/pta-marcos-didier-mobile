@@ -3,7 +3,7 @@ import { btfechar, citipetlogo } from "@/assets";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 
-export default function Modalcadastro() {
+export default function ModalCadastro() {
   const { register, handleSubmit } = useForm<{ email: string }>();
 
   function onSubmit(data: { email: string }) {
