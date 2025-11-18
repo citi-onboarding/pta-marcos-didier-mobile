@@ -22,3 +22,39 @@ model Test {
   name String
   age  Int
 }
+
+enum Especies {
+  Bode
+  Gato
+  Porco
+  Girafa
+  Cavalo
+  Cachorro
+}
+
+enum TipoConsulta {
+  PrimeiraConsulta
+  Retorno
+  CheckUp
+  Vacinacao
+}
+
+model Paciente {
+  id Int @id @default(autoincrement())
+  genero String
+  idade Int
+  especie Especies
+  nomedono String
+  nomedoanimal String
+  consulta Consulta[]// array de consultas para fazer o relacionamento
+}
+
+model Consulta {
+  id Int @id @default(autoincrement())
+  medico String
+  descricao String
+  tipo TipoConsulta
+  dataehora DateTime//apago depois se for usar separado
+  idpaciente Int
+  paciente Paciente @relation(fields: [idpaciente], references: [id])// relaciona uma consulta especifica a um paciente
+}
