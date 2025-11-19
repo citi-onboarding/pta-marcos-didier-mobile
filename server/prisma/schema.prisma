@@ -44,8 +44,9 @@ model Paciente {
   genero String
   idade Int
   especie Especies
-  nomedono String
-  nomedoanimal String
+  nomeDono String
+  nomeDoAnimal String
+
   consulta Consulta[]// array de consultas para fazer o relacionamento
 }
 
@@ -54,7 +55,8 @@ model Consulta {
   medico String
   descricao String
   tipo TipoConsulta
-  dataehora DateTime//apago depois se for usar separado
-  idpaciente Int
-  paciente Paciente @relation(fields: [idpaciente], references: [id])// relaciona uma consulta especifica a um paciente
+  data String
+  hora String
+  idPaciente Int
+  paciente Paciente @relation(fields: [idPaciente], references: [id])// relaciona uma consulta especifica a um paciente
 }
