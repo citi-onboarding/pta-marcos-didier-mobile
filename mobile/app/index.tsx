@@ -9,6 +9,7 @@ import React, { useState } from "react";
 import Sun from "../src/assets/sunsvg.svg";
 import Cloud from "../src/assets/cloudsvg.svg";
 import Moon from "../src/assets/moonsvg.svg";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const cardsMock = [
   {
@@ -138,6 +139,16 @@ const App = () => {
           ))}
         </ScrollView>
       </View>
+      <SafeAreaView
+        className="
+    absolute
+    left-0 right-0
+    -bottom-10
+    bg-[#48D17C]
+    rounded-t-2xl
+    h-[75px]
+  "
+      />
     </View>
   );
 };
