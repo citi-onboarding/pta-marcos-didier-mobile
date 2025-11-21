@@ -6,11 +6,9 @@ import Citigpt from "../src/assets/citigpt.svg";
 import { ScrollView } from "react-native-gesture-handler";
 import { Pressable } from "react-native";
 import React, { useState } from "react";
-import Sun from "../src/assets/sun.svg";
-import Cloud from "../src/assets/cloud.svg";
-import Moon from "../src/assets/moon.svg";
-
-const [selecionado, setSelecionado] = useState("");
+import Sun from "../src/assets/sunsvg.svg";
+import Cloud from "../src/assets/cloudsvg.svg";
+import Moon from "../src/assets/moonsvg.svg";
 
 const cardsMock = [
   {
@@ -60,27 +58,88 @@ const cardsMock = [
   },
 ] as const;
 
-const App = () => (
-  <View className="flex-1 mt-[91px] items-center bg-gray-100 flex flex-col">
-    <Citigpt width={160} height={48} />
+const App = () => {
+  type FiltroHora = "" | "Sun" | "cloud" | "lua";
+  const [selecionado, setSelecionado] = useState<FiltroHora>("");
 
-    <View className="mt-[40px]">
-      <Text className="font-sf font-bold text-[24px] ">Sua agenda</Text>
-      <Text className="font-sf text-[14px] mt-[12px]">
-        Veja aqui todos os seus pacientes agendados para hoje
-      </Text>
+  const toMinutes = (hora: string) => {
+    // recebe hora e minutos e transforma em minutos totais pra fazer o filtro de manha tarde e noite
+    const [h, m] = hora.split(":").map(Number);
+    return h * 60 + m;
+  };
+
+  const ranges: Record<
+    Exclude<FiltroHora, "">,
+    { start: number; end: number }
+  > = {
+    Sun: { start: 0, end: 12 * 60 },
+    cloud: { start: 12 * 60 + 1, end: 18 * 60 },
+    lua: { start: 18 * 60 + 1, end: 24 * 60 },
+  };
+
+  const filteredCards = (() => {
+    if (!selecionado) return cardsMock;
+
+    const range = ranges[selecionado];
+
+    return cardsMock.filter((c) => {
+      const minutos = toMinutes(c.horario);
+      return minutos >= range.start && minutos <= range.end;
+    });
+  })();
+
+  return (
+    <View className="flex-1 mt-[91px] items-center bg-gray-100 flex flex-col">
+      <Citigpt width={160} height={48} />
+
+      <View className="bg-white mt-[32px] rounded-full w-[252px] h-[70px] flex-row justify-around items-center shadow-[0px_4px_4px_rgba(0,0,0,0.3)]">
+        <Pressable
+          onPress={() => setSelecionado(selecionado === "Sun" ? "" : "Sun")}
+          className={`w-[40px] h-[40px] rounded-full items-center justify-center ${
+            selecionado === "Sun" ? "bg-gray-300" : "bg-transparent"
+          }`}
+        >
+          <Sun />
+        </Pressable>
+
+        <Pressable
+          onPress={() => setSelecionado(selecionado === "cloud" ? "" : "cloud")}
+          className={`w-[40px] h-[40px] rounded-full items-center justify-center ${
+            selecionado === "cloud" ? "bg-gray-300" : "bg-transparent"
+          }`}
+        >
+          <Cloud />
+        </Pressable>
+
+        <Pressable
+          onPress={() => setSelecionado(selecionado === "lua" ? "" : "lua")}
+          className={`w-[40px] h-[40px] rounded-full items-center justify-center ${
+            selecionado === "lua" ? "bg-gray-300" : "bg-transparent"
+          }`}
+        >
+          <Moon />
+        </Pressable>
+      </View>
+
+      <View className="mt-[40px]">
+        <Text className="font-sf font-bold text-[24px]">Sua agenda</Text>
+        <Text className="font-sf text-[14px] mt-[12px]">
+          Veja aqui todos os seus pacientes agendados para hoje
+        </Text>
+      </View>
+
+      <View className="w-full px-6 mt-4" style={{ height: 440 }}>
+        <ScrollView
+          contentContainerStyle={{ gap: 16, alignItems: "center" }}
+          className="mt-[39px]"
+        >
+          {filteredCards.map((card, idx) => (
+            <PetCard key={idx} {...card} />
+          ))}
+        </ScrollView>
+      </View>
     </View>
-    <View className="w-full px-6 mt-4" style={{ height: 440 }}>
-      <ScrollView
-        contentContainerStyle={{ gap: 16, alignItems: "center" }}
-        className="mt-[39px]"
-      >
-        {cardsMock.map((card, idx) => (
-          <PetCard key={idx} {...card} />
-        ))}
-      </ScrollView>
-    </View>
-  </View>
-);
+  );
+};
 
 export default App;

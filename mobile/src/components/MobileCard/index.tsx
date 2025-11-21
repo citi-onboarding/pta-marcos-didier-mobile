@@ -33,7 +33,7 @@ const imgsporpet: Record<PetCardmbProps["tipoPet"], React.FC<SvgProps>> = {
 export default function PetCard(props: PetCardmbProps) {
   return (
     <View
-      className="w-[358px] h-[122px] rounded-2xl flex flex-row gap-6 items-center"
+      className="w-[358px] h-[122px] rounded-2xl flex flex-row gap-4 items-center"
       style={{ backgroundColor: corPorConsulta[props.type] }}
     >
       <View className="w-[51px] h-[90px] bg-[#FFFFFFCC] rounded-sm items-center justify-center  ml-[24px] gap-[8px]">
@@ -45,7 +45,7 @@ export default function PetCard(props: PetCardmbProps) {
         <Text className="font-bold font-sf">{props.data}</Text>
         <Text className="font-bold font-sf">{props.horario}</Text>
       </View>
-      <View className="flex flex-col gap-4">
+      <View className="flex flex-col gap-4 w-[135px]">
         <Text className="font-bold font-sf">
           {props.nomePet}{" "}
           <Text className="font-normal font-sf">/ {props.nomeDono}</Text>
@@ -53,10 +53,10 @@ export default function PetCard(props: PetCardmbProps) {
         <Text className="font-sf">Dr. {props.nomeDr} </Text>
       </View>
 
-      <View className="flex flex-col justify-center items-center w-[101px] ml-[24px]">
+      <View className="flex flex-col justify-center items-center w-[101px] ml-[0px]">
         {(() => {
           const Icon = imgsporpet[props.tipoPet];
-          return <Icon className="w-[69px] h-[70px] mb-2" />;
+          return <Icon width={69} height={70} />;
         })()}
         {/* retorna a imagem como componente */}
 
