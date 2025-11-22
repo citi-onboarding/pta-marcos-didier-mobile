@@ -50,7 +50,7 @@ export default function Cadastro(){
 
 
     return (
-        <div className="grid grid-cols-1">
+        <div className="grid grid-cols-1 ml-24 mr-24">
             <div className="p-5">
                 <div className="flex flex-col">
                     <div className="flex items-center space-x-2 text-2xl font-semibold mb-6 cursor-pointer">
@@ -96,9 +96,7 @@ export default function Cadastro(){
                                     className={`
                                         cursor-pointer p-3 rounded-xl border transition-all duration-200
                                         flex items-center justify-center w-20 h-20
-                                        ${especieSelecionada === animal 
-                                            ? "bg-green-100 border-green-500 shadow-md scale-105" //style selecionado
-                                            : "bg-gray-50 border-gray-200 hover:bg-gray-100 grayscale hover:grayscale-0" //style normal
+                                            ${especieSelecionada === animal &&  "bg-green-100 border-green-500 shadow-md scale-105" //style selecionado
                                         }
                                     `}
                                 >
