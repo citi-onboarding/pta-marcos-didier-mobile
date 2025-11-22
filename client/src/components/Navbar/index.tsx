@@ -12,9 +12,9 @@ export default function NavBar(){
     const [buttonSelected, setButtonSelected] = useState("atendimento");
 
     return(
-        <div className="flex w-full min-w-[675px] min-h-[114px] bg-white justify-between items-center p-5">
+        <div className="ml-2 mr-2 flex w-full min-w-[675px] min-h-[80px] bg-white justify-between items-center p-5">
             <div>
-                <img src={citipetlogo.src} alt="citipetlogo" className="w-[189px]"/>
+                <img src={citipetlogo.src} alt="citipetlogo" className="w-[160px]"/>
             </div>
             <div className="space-x-8 flex">
                 <div className="space-y-1 flex flex-col items-center">
