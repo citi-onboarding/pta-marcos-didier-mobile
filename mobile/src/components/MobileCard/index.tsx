@@ -1,6 +1,5 @@
 import React from "react";
 import { View, Text, Image } from "react-native";
-import type { SvgProps } from "react-native-svg";
 import { Alarmmobile, cat, dog, cow, horse, pig, sheep } from "../../assets";
 
 export interface PetCardmbProps {
@@ -13,7 +12,6 @@ export interface PetCardmbProps {
   tipoPet: "cat" | "dog" | "sheep" | "cow" | "horse" | "pig";
 }
 
-// CORES
 const corPorConsulta = {
   "Primeira consulta": "#BFB5FF",
   Vacinacao: "#AAE1FF",
@@ -22,11 +20,7 @@ const corPorConsulta = {
   Historico: "#F0F0F0",
 };
 
-// MAPA DE IMAGENS (PNG ou SVG)
-const imgsporpet: Record<
-  PetCardmbProps["tipoPet"],
-  any // pode ser componente SVG ou PNG
-> = {
+const imgsporpet: Record<PetCardmbProps["tipoPet"], any> = {
   cat,
   dog,
   sheep,
@@ -45,9 +39,7 @@ export default function PetCard(props: PetCardmbProps) {
       className="w-[358px] h-[122px] rounded-2xl flex flex-row gap-4 items-center"
       style={{ backgroundColor: corPorConsulta[props.type] }}
     >
-      {/* COLUNA DA DATA E ALARME */}
       <View className="w-[51px] h-[90px] bg-[#FFFFFFCC] rounded-sm items-center justify-center ml-[24px] gap-[8px]">
-        {/* Alarmmobile → também pode ser SVG OU PNG */}
         {typeof Alarmmobile === "function" ? (
           <Alarmmobile width={22} height={22} />
         ) : (
@@ -62,7 +54,6 @@ export default function PetCard(props: PetCardmbProps) {
         <Text className="font-bold font-sf">{props.horario}</Text>
       </View>
 
-      {/* COLUNA CENTRAL */}
       <View className="flex flex-col gap-4 w-[135px]">
         <Text className="font-bold font-sf">
           {props.nomePet}{" "}
@@ -71,7 +62,6 @@ export default function PetCard(props: PetCardmbProps) {
         <Text className="font-sf">Dr. {props.nomeDr}</Text>
       </View>
 
-      {/* COLUNA DA IMAGEM DO PET */}
       <View className="flex flex-col justify-center items-center w-[101px]">
         {isSvg ? (
           <PetImage width={69} height={70} />

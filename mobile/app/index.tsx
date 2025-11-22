@@ -1,7 +1,5 @@
 import { View, Text } from "react-native";
 import PetCard from "../src/components/MobileCard";
-import Citipet from "../src/assets/citipet.svg";
-import Citipetnovo from "../src/assets/citipetnovo.svg";
 import Citigpt from "../src/assets/citigpt.svg";
 import { ScrollView } from "react-native-gesture-handler";
 import { Pressable } from "react-native";
@@ -10,7 +8,6 @@ import Sun from "../src/assets/sunsvg.svg";
 import Cloud from "../src/assets/cloudsvg.svg";
 import Moon from "../src/assets/moonsvg.svg";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Dog from "../src/assets/dog.png";
 
 const cardsMock = [
   {
