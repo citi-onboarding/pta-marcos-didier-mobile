@@ -10,6 +10,7 @@ import Sun from "../src/assets/sunsvg.svg";
 import Cloud from "../src/assets/cloudsvg.svg";
 import Moon from "../src/assets/moonsvg.svg";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Dog from "../src/assets/dog.png";
 
 const cardsMock = [
   {
