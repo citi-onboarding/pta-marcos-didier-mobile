@@ -8,6 +8,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
+        sf: ['"SF Pro Display"', "sans-serif"],
         barlowThin: ["Barlow_100Thin"],
         barlowLight: ["Barlow_300Light"],
         barlowRegular: ["Barlow_400Regular"],
