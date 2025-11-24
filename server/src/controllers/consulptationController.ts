@@ -48,9 +48,9 @@ class consulptationController implements Crud {
 
   update = async (request: Request, response: Response) => {
     const { id } = request.params;
-    const { medico, descricao, tipo, data, hora, idPaciente } = request.body;
+    const { medico, descricao, tipo, data, hora } = request.body;
 
-    const updatedValues = { medico, descricao, tipo, data, hora, idPaciente };
+    const updatedValues = { medico, descricao, tipo, data, hora };
 
     const { httpStatus, messageFromUpdate } = await this.citi.updateValue(
       id,

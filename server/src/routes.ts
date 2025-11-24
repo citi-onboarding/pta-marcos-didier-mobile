@@ -12,7 +12,7 @@ routes.patch("/user/:id", userController.update);
 routes.post("/consultation", consulptationController.create);
 routes.get("/consultation", consulptationController.get);
 routes.delete("/consultation/:id", consulptationController.delete);
-routes.patch("/consultation/:id", consulptationController.update);
+routes.put("/consultation/:id", consulptationController.update);
 routes.get("/consultation/:id", consulptationController.getbyid);
 
 export default routes;
