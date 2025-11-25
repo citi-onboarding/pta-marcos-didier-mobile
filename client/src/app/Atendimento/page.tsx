@@ -7,10 +7,11 @@ import Arrow from "@/assets/arrow_back.svg";
 import React from "react";
 import { useForm } from "react-hook-form";
 import cat from "@/assets/cat.svg";
-import dog from "@/assets/dog.svg";
+import dog from "@/assets/dog.png";
 import sheep from "@/assets/sheep.svg";
 import horse from "@/assets/horse.svg";
 import pig from "@/assets/pig.svg";
+import cow from "@/assets/cow.svg";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
@@ -99,6 +100,28 @@ export default function Atendimento() {
       time: "13:00",
       animalIcon: dog,
       color: "bg-[#9CFF95]",
+    },
+
+    {
+      type_appointment: "Checkup",
+      patientName: "Dolly",
+      ownerName: "Renata",
+      doctorName: "Lucas",
+      date: "21/11",
+      time: "16:00",
+      animalIcon: sheep,
+      color: "bg-[#AAE1FF]",
+    },
+
+    {
+      type_appointment: "Primeira consulta",
+      patientName: "Touro",
+      ownerName: "Jorge",
+      doctorName: "Aline",
+      date: "22/11",
+      time: "11:30",
+      animalIcon: cow,
+      color: "bg-[#FF6419]",
     },
   ];
 
@@ -262,7 +285,7 @@ export default function Atendimento() {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-3 mt-2 mx-auto w-[1536px] h-[294px] ml-[165px] overflow-y-auto">
+          <div className="grid grid-cols-3 gap-x-4 gap-y-6 mt-2 mx-auto w-[1536px] h-[294px] ml-[165px] overflow-y-auto">
             {cardsMock.map((card, idx) => (
               <Card
                 key={idx}
