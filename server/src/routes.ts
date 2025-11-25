@@ -1,6 +1,6 @@
 import express from "express";
 import userController from "./controllers/UserController";
-import consulptationController from "./controllers/consulptationController";
+import consultationController from "./controllers/ConsultationController";
 
 const routes = express.Router();
 
@@ -9,10 +9,13 @@ routes.get("/user", userController.get);
 routes.delete("/user/:id", userController.delete);
 routes.patch("/user/:id", userController.update);
 
-routes.post("/consultation", consulptationController.create);
-routes.get("/consultation", consulptationController.get);
-routes.delete("/consultation/:id", consulptationController.delete);
-routes.put("/consultation/:id", consulptationController.update);
-routes.get("/consultation/:id", consulptationController.getbyid);
+// ROTAS DE CONSULTAS
+
+routes.post("/consultation", consultationController.create);
+routes.get("/consultation", consultationController.get);
+routes.delete("/consultation/:id", consultationController.delete);
+routes.put("/consultation/:id", consultationController.update);
+routes.get("/consultation/:id", consultationController.getById);
+routes.get("/consultation/pet/:id", consultationController.getByPetId);
 
 export default routes;

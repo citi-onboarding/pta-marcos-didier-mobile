@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { Citi, Crud } from "../global";
 
-class consulptationController implements Crud {
+class consultationController implements Crud {
   constructor(private readonly citi = new Citi("Consulta")) {}
 
   create = async (request: Request, response: Response) => {
@@ -31,7 +31,7 @@ class consulptationController implements Crud {
     return response.status(httpStatus).send(values);
   };
 
-  getbyid = async (request: Request, response: Response) => {
+  getById = async (request: Request, response: Response) => {
     const { id } = request.params;
     const { httpStatus, value } = await this.citi.findById(id);
 
@@ -59,6 +59,13 @@ class consulptationController implements Crud {
 
     return response.status(httpStatus).send({ messageFromUpdate });
   };
+
+  getByPetId = async (request: Request, response: Response) => {
+    const { id } = request.params;
+    const { httpStatus, values } = await this.citi.getConsultsByPet(id);
+
+    return response.status(httpStatus).send(values);
+  };
 }
 
-export default new consulptationController();
+export default new consultationController();
