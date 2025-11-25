@@ -17,5 +17,6 @@ routes.delete("/consultation/:id", consultationController.delete);
 routes.put("/consultation/:id", consultationController.update);
 routes.get("/consultation/:id", consultationController.getById);
 routes.get("/consultation/pet/:id", consultationController.getByPetId);
+routes.get("/consultation/dr/:drName", consultationController.getByPetDr);
 
 export default routes;
