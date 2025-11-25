@@ -66,6 +66,13 @@ class consultationController implements Crud {
 
     return response.status(httpStatus).send(values);
   };
+
+  getByPetDr = async (request: Request, response: Response) => {
+    const { drName } = request.params;
+    const { httpStatus, values } = await this.citi.getConsultsByDr(drName);
+
+    return response.status(httpStatus).send(values);
+  };
 }
 
 export default new consultationController();
