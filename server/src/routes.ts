@@ -15,8 +15,24 @@ routes.post("/consultation", consultationController.create);
 routes.get("/consultation", consultationController.get);
 routes.delete("/consultation/:id", consultationController.delete);
 routes.put("/consultation/:id", consultationController.update);
-routes.get("/consultation/:id", consultationController.getById);
 routes.get("/consultation/pet/:id", consultationController.getByPetId);
 routes.get("/consultation/dr/:drName", consultationController.getByPetDr);
+routes.get(
+  "/consultation/cards",
+  consultationController.getAllCondultationsforthecards
+);
+routes.get(
+  "/consultation/historic/:petid",
+  consultationController.getConsultationForHistoric
+);
+
+//detalhes da consulta
+routes.get(
+  "/consultation/details/:id",
+  consultationController.getConsultationDetailsByConsultationId
+);
+
+// rota dinâmica de id deve ficar após rotas estáticas para evitar conflito com '/cards', '/pet', etc.
+routes.get("/consultation/:id", consultationController.getById);
 
 export default routes;
