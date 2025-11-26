@@ -22,12 +22,10 @@ export default function Card(props: CardProps) {
 
     return (
             <div className = {`w-[495px] h-[135px] ${color} rounded-[16px] flex items-center gap-8`}>
-                <div className = "w-[51px] h-[90px] bg-[#FFFFFFCC] rounded-[4px] ml-[24px]">
-                    <Image src={alarm} alt="Alarme" className="w-[20px] h-[20px] ml-[15.5px] mt-[12px]"></Image>
-
-                    <div className = "w-[39px] h-[15px] font-bold ml-[6px] mt-[6px] text-[14px]">{date}</div>
-                    <div className = "w-[39px] h-[15px] font-bold ml-[7px] mt-[9px] text-[14px]">{time}</div>
-
+                <div className = "w-[51px] h-[90px] bg-[#FFFFFFCC] rounded-[4px] ml-[24px] flex flex-col items-center justify-center">
+                    <Image src={alarm} alt="Alarme" className="w-[20px] h-[20px] mb-1"></Image>
+                    <div className = "font-bold text-[14px] mb-1">{date}</div>
+                    <div className = "font-bold text-[14px]">{time}</div>
                 </div>
                 <div className = "w-[106px] h-[15px]">
                     <span className = "font-bold text-[14px]">{patientName} </span>

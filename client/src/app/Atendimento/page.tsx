@@ -299,7 +299,7 @@ export default function Atendimento() {
             <div />
           </div>
 
-          <div className="w-[205px] h-[48px] ml-[1525px] mt-[60px]">
+          <div className="w-[205px] h-[48px] ml-[1525px] mt-[180px]">
             <Botao
               text="Nova Consulta"
               color="#50E678"
