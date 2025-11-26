@@ -12,6 +12,7 @@ export default function ModalCadastro(props: modalprops) {
 
   function onSubmit(data: { email: string }) {
     console.log("Email enviado:", data.email);
+    props.abrirModal(false);
   }
 
   return (

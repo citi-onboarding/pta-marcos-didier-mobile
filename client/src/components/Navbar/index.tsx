@@ -6,10 +6,22 @@
 import { citipetlogo } from "@/assets"
 import { button_groups } from "@/assets"
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 
 export default function NavBar(){
 
     const [buttonSelected, setButtonSelected] = useState("atendimento");
+    const router = useRouter();
+
+    const handleAtendimentoClick = () => {
+        setButtonSelected("atendimento");
+        router.push("/Atendimento");
+    };
+
+    const handleCadastroClick = () => {
+        setButtonSelected("cadastro");
+        router.push("/Cadastro");
+    };
 
     return(
         <div className="ml-2 mr-2 flex w-full min-w-[675px] min-h-[80px] bg-white justify-between items-center p-5">
@@ -18,12 +30,12 @@ export default function NavBar(){
             </div>
             <div className="space-x-8 flex">
                 <div className="space-y-1 flex flex-col items-center">
-                    <button onClick={() => setButtonSelected("cadastro")} className=" p-2 hover:bg-lime-300 hover:rounded-full transition-all duration-300 ease-in-out">Cadastro</button>
-                    <div className={`h-[2px] bg-green-500 transition-all duration-300 ease-in-out ${buttonSelected === "cadastro" ? "w-full" : "w-0"}`}></div>
+                    <button onClick={handleAtendimentoClick} className=" p-2 hover:bg-lime-300 hover:rounded-full transition-all duration-300 ease-in-out">Atendimento</button>
+                    <div className={`h-[2px] bg-green-500 transition-all duration-300 ease-in-out ${buttonSelected === "atendimento" ? "w-full" : "w-0"}`}></div>
                 </div>
                 <div className="space-y-1 flex flex-col items-center">
-                    <button onClick={() => setButtonSelected("atendimento")} className=" p-2 hover:bg-lime-300 hover:rounded-full transition-all duration-300 ease-in-out">Atendimento</button>
-                    <div className={`h-[2px] bg-green-500 transition-all duration-300 ease-in-out ${buttonSelected === "atendimento" ? "w-full" : "w-0"}`}></div>
+                    <button onClick={handleCadastroClick} className=" p-2 hover:bg-lime-300 hover:rounded-full transition-all duration-300 ease-in-out">Cadastro</button>
+                    <div className={`h-[2px] bg-green-500 transition-all duration-300 ease-in-out ${buttonSelected === "cadastro" ? "w-full" : "w-0"}`}></div>
                 </div>
             </div>
             <div>
