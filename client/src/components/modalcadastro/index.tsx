@@ -16,29 +16,34 @@ export default function ModalCadastro(props: modalprops) {
   }
 
   return (
-    <div className="w-[408px] h-[423px] bg-white rounded-3xl">
-      <div className="flex justify-center">
-        <div className="flex">
+    <div className="w-[90vw] max-w-[408px] h-auto bg-white rounded-3xl mx-4">
+      <div className="flex justify-center px-4 sm:px-8">
+        <div className="flex w-full justify-between items-center">
+          <div className="flex-1" />
           <Image
             src={citipetlogo}
             alt="citipetlogo"
-            className=" mt-[48px] ml-[54px]"
+            className="mt-[48px] w-[120px] sm:w-[160px]"
           />
-          <Image
-            src={btfechar}
-            alt="btfechar"
-            className="ml-[30px] cursor-pointer"
-            onClick={() => props.abrirModal(false)}
-          />
+          <div className="flex-1 flex justify-end">
+            <Image
+              src={btfechar}
+              alt="btfechar"
+              className="cursor-pointer w-6 h-6 sm:w-8 sm:h-8 mt-4"
+              onClick={() => props.abrirModal(false)}
+            />
+          </div>
         </div>
       </div>
 
-      <div className="flex gap-1 flex-col items-center mt-[20px] font-sf text-[16px]">
-        <div className="flex">
-          <div className="font-bold">Cadastro finalizado!</div>
-          <div>Envie o</div>
+      <div className="flex gap-1 flex-col items-center mt-[20px] font-sf text-[14px] sm:text-[16px] px-4">
+        <div className="flex flex-wrap justify-center text-center">
+          <div className="flex gap-1">
+            <div className="font-bold">Cadastro finalizado!</div>
+            <div>Envie o</div>
+          </div>
         </div>
-        <div className="flex">
+        <div className="flex gap-1">
           <div>comprovante para o</div>
           <div className="font-bold">tutor</div>
         </div>
@@ -46,7 +51,7 @@ export default function ModalCadastro(props: modalprops) {
 
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col mt-[29px] w-[312px] ml-[48px] text-[16px] font-sf"
+        className="flex flex-col mt-[29px] px-4 sm:px-8 text-[14px] sm:text-[16px] font-sf pb-8"
       >
         <div className="font-bold">E-mail</div>
         <input
@@ -58,7 +63,7 @@ export default function ModalCadastro(props: modalprops) {
 
         <button
           type="submit"
-          className="mt-[30px] w-[312px] h-[42px] bg-[#50E678] rounded-3xl flex items-center justify-center shadow-[0px_4px_4px_rgba(0,0,0,0.10)] text-white font-sf text-[16px]"
+          className="mt-[30px] w-full h-[42px] bg-[#50E678] rounded-3xl flex items-center justify-center shadow-[0px_4px_4px_rgba(0,0,0,0.10)] text-white font-sf text-[14px] sm:text-[16px]"
         >
           Enviar
         </button>

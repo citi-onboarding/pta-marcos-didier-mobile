@@ -3,7 +3,6 @@ import { btfechar, citipetlogo } from "@/assets";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { time } from "console";
 
 export interface modalprops {
   abrirModal: (openclose: boolean) => void;
@@ -27,25 +26,28 @@ export default function ModalNovaConsulta(props: modalprops) {
   const [timeType, settimeType] = useState("text");
 
   return (
-    <div className="w-[824px] h-[493px] bg-white rounded-3xl">
-      <div className="flex justify-center">
-        <div className="flex">
+    <div className="w-[90vw] max-w-[824px] h-auto max-h-[90vh] bg-white rounded-3xl overflow-y-auto mx-4">
+      <div className="flex justify-center px-4 sm:px-8">
+        <div className="flex w-full justify-between items-center">
+          <div className="flex-1" />
           <Image
             src={citipetlogo}
             alt="citipetlogo"
-            className=" mt-[48px] ml-[269px]"
+            className="mt-[48px] w-[120px] sm:w-[160px]"
           />
-          <Image
-            src={btfechar}
-            alt="btfechar"
-            className="ml-[245px]"
-            onClick={() => props.abrirModal(false)}
-          />
+          <div className="flex-1 flex justify-end">
+            <Image
+              src={btfechar}
+              alt="btfechar"
+              className="cursor-pointer w-6 h-6 sm:w-8 sm:h-8 mt-4"
+              onClick={() => props.abrirModal(false)}
+            />
+          </div>
         </div>
       </div>
 
-      <div className="flex gap-1 flex-col items-center mt-[20px] font-sf text-[16px]">
-        <div className="flex gap-1">
+      <div className="flex gap-1 flex-col items-center mt-[20px] font-sf text-[14px] sm:text-[16px] px-4">
+        <div className="flex gap-1 flex-wrap justify-center text-center">
           <div className="font-bold">O pet já está cadastrado no sistema!</div>
           <div>Preencha os dados da</div>
           <div className="font-bold">consulta</div>
@@ -54,14 +56,14 @@ export default function ModalNovaConsulta(props: modalprops) {
 
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col mt-[29px] w-[312px] ml-[48px] text-[16px] font-sf"
+        className="flex flex-col mt-[29px] px-4 sm:px-8 text-[14px] sm:text-[16px] font-sf pb-8"
       >
-        <div className="flex">
-          <div>
+        <div className="flex flex-col lg:flex-row gap-4">
+          <div className="flex-1">
             <div className="font-bold">Tipo de consulta</div>
             <select
               {...register("tipodeconsulta")}
-              className="mt-[12px] h-[50px] w-[358px] border border-gray-300 px-3 rounded-lg"
+              className="mt-[12px] h-[50px] w-full border border-gray-300 px-3 rounded-lg"
             >
               <option value="" disabled>
                 Selecione aqui
@@ -81,15 +83,15 @@ export default function ModalNovaConsulta(props: modalprops) {
                 if (!e.target.value) setDateType("text");
               }}
               placeholder="dd/mm/aa"
-              className="mt-[12px] h-[50px] w-[358px] border border-gray-300 px-3 rounded-lg"
+              className="mt-[12px] h-[50px] w-full border border-gray-300 px-3 rounded-lg"
             />
           </div>
-          <div className="ml-[12px]">
+          <div className="flex-1">
             <div className="font-bold">Médico Responsável</div>
             <input
               {...register("medico")}
               type="text"
-              className="mt-[12px] h-[50px]  w-[358px] border border-gray-300 px-3 rounded-lg"
+              className="mt-[12px] h-[50px] w-full border border-gray-300 px-3 rounded-lg"
               placeholder="Digite aqui..."
             />
 
@@ -101,14 +103,14 @@ export default function ModalNovaConsulta(props: modalprops) {
               onBlur={(e) => {
                 if (!e.target.value) settimeType("text");
               }}
-              className="appearance-none mt-[12px] h-[50px]  w-[358px] border border-gray-300 px-3 rounded-lg"
+              className="appearance-none mt-[12px] h-[50px] w-full border border-gray-300 px-3 rounded-lg"
               placeholder="00:00"
             />
           </div>
         </div>
         <button
           type="submit"
-          className="mt-[30px] w-[728px] h-[42px] bg-[#50E678] rounded-3xl flex items-center justify-center shadow-[0px_4px_4px_rgba(0,0,0,0.10)] text-white font-sf text-[16px]"
+          className="mt-[30px] w-full h-[42px] bg-[#50E678] rounded-3xl flex items-center justify-center shadow-[0px_4px_4px_rgba(0,0,0,0.10)] text-white font-sf text-[14px] sm:text-[16px]"
         >
           Finalizar cadastro
         </button>
