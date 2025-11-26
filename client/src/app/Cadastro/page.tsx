@@ -2,7 +2,8 @@
 
 import { useForm } from "react-hook-form";
 import { FaChevronLeft } from "react-icons/fa";
-import { sheep, cat, pig, cow, horse, dog } from "@/assets";
+import { sheep, cat, pig, cow, horse } from "@/assets";
+import dog from "@/assets/dog.png";
 import NavBar from "@/components/Navbar";
 import ModalCadastro from "@/components/modalcadastro";
 import { useState } from "react";
