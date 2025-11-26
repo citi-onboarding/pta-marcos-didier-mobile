@@ -1,13 +1,18 @@
 "use client";
 import { btfechar, citipetlogo } from "@/assets";
 import Image from "next/image";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 
-export default function ModalCadastro() {
+export interface modalprops {
+  abrirModal: (openclose: boolean) => void;
+}
+
+export default function ModalCadastro(props: modalprops) {
   const { register, handleSubmit } = useForm<{ email: string }>();
 
   function onSubmit(data: { email: string }) {
     console.log("Email enviado:", data.email);
+    props.abrirModal(false);
   }
 
   return (
@@ -19,7 +24,12 @@ export default function ModalCadastro() {
             alt="citipetlogo"
             className=" mt-[48px] ml-[54px]"
           />
-          <Image src={btfechar} alt="btfechar" className="ml-[30px]" />
+          <Image
+            src={btfechar}
+            alt="btfechar"
+            className="ml-[30px] cursor-pointer"
+            onClick={() => props.abrirModal(false)}
+          />
         </div>
       </div>
 

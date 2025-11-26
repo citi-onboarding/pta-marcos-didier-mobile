@@ -213,4 +213,75 @@ export default class Citi<Entity extends ModelNames> {
       };
     }
   }
+  async getConsultsByPet(
+    id: string | number
+  ): Promise<GetableDatabase<Models[Entity]>> {
+    try {
+      const consults = await prisma[
+        this.entity.toLowerCase() as Uncapitalize<Prisma.ModelName>
+        //@ts-expect-error
+      ].findMany({
+        where: {
+          idPaciente: Number(id),
+        },
+      });
+
+      if (consults.length === 0) {
+        Terminal.show(Message.VALUE_WAS_NOT_FOUND);
+        return {
+          httpStatus: 404,
+          values: [],
+        };
+      }
+
+      Terminal.show(Message.GET_ALL_VALUES_FROM_DATABASE);
+      return {
+        httpStatus: 200,
+        values: consults,
+      };
+    } catch (error) {
+      Terminal.show(Message.ERROR_GETTING_VALUES_FROM_DATABASE);
+      return {
+        httpStatus: 400,
+        values: [],
+      };
+    }
+  }
+
+  async getConsultsByDr(
+    medico: string
+  ): Promise<GetableDatabase<Models[Entity]>> {
+    try {
+      const consults = await prisma[
+        this.entity.toLowerCase() as Uncapitalize<Prisma.ModelName>
+        //@ts-expect-error
+      ].findMany({
+        where: {
+          medico: {
+            contains: medico,
+            mode: "insensitive",
+          },
+        },
+      });
+      if (consults.length === 0) {
+        Terminal.show(Message.VALUE_WAS_NOT_FOUND);
+        return {
+          httpStatus: 404,
+          values: [],
+        };
+      }
+
+      Terminal.show(Message.GET_ALL_VALUES_FROM_DATABASE);
+      return {
+        httpStatus: 200,
+        values: consults,
+      };
+    } catch (error) {
+      Terminal.show(Message.ERROR_GETTING_VALUES_FROM_DATABASE);
+      return {
+        httpStatus: 400,
+        values: [],
+      };
+    }
+  }
 }

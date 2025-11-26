@@ -5,7 +5,11 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { time } from "console";
 
-export default function ModalNovaConsulta() {
+export interface modalprops {
+  abrirModal: (openclose: boolean) => void;
+}
+
+export default function ModalNovaConsulta(props: modalprops) {
   type FormData = {
     tipodeconsulta: string;
     data: string;
@@ -31,7 +35,12 @@ export default function ModalNovaConsulta() {
             alt="citipetlogo"
             className=" mt-[48px] ml-[269px]"
           />
-          <Image src={btfechar} alt="btfechar" className="ml-[245px]" />
+          <Image
+            src={btfechar}
+            alt="btfechar"
+            className="ml-[245px]"
+            onClick={() => props.abrirModal(false)}
+          />
         </div>
       </div>
 
