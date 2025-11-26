@@ -2,6 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { FaChevronLeft } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 import { sheep, cat, pig, cow, horse } from "@/assets";
 import dog from "@/assets/dog.png";
 import NavBar from "@/components/Navbar";
@@ -12,6 +13,7 @@ export default function Cadastro(){
 
     const {register, handleSubmit, setValue, watch, formState: {errors}} = useForm();
     const [modalAberto, setModalAberto] = useState(false);
+    const router = useRouter();
 
     const submitForm = (data: any) => {
         console.log("Dados do formulário: ", data);
@@ -21,6 +23,10 @@ export default function Cadastro(){
     const handleFecharModal = (openclose: boolean) => {
         setModalAberto(openclose);
     }
+
+    const handleGoBack = () => {
+        router.back();
+    };
 
     const MockedMedicosCadastrados = [
         "Marcos Didier",
@@ -69,7 +75,10 @@ export default function Cadastro(){
                 <div className="w-full px-4 sm:px-8 lg:px-[165px]">
                     <div className="pt-[40px] w-full">
                         <div className="flex items-center">
-                            <FaChevronLeft className="w-[24px] h-[24px] hover:text-3xl hover:bg-slate-400 hover: rounded-full hover:p-1 cursor-pointer" />
+                            <FaChevronLeft 
+                                className="w-[24px] h-[24px] hover:text-3xl hover:bg-slate-400 hover: rounded-full hover:p-1 cursor-pointer" 
+                                onClick={handleGoBack}
+                            />
                             <p className="text-[32px] sm:text-[48px] ml-[16px] font-bold">Cadastro</p>
                         </div>
                     </div>

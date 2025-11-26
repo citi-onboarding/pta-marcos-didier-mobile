@@ -6,6 +6,7 @@ import Image from "next/image";
 import Arrow from "@/assets/arrow_back.svg";
 import React from "react";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 import cat from "@/assets/cat.svg";
 import dog from "@/assets/dog.png";
 import sheep from "@/assets/sheep.svg";
@@ -27,6 +28,8 @@ export default function Atendimento() {
   const [selectedTab, setSelectedTab] = React.useState<
     "agendamento" | "historico"
   >("agendamento");
+
+  const router = useRouter();
 
   const cardsMock = [
     {
@@ -104,6 +107,14 @@ export default function Atendimento() {
     alert("Pesquisa enviada!");
   }
 
+  const handleNovaConsulta = () => {
+    router.push("/Cadastro");
+  };
+
+  const handleGoBack = () => {
+    router.back();
+  };
+
   return (
     <div className="flex flex-1 flex-col bg-[#FFFFFF] min-h-screen">
       <div className="w-full flex flex-col">
@@ -115,7 +126,12 @@ export default function Atendimento() {
         <div className="w-full px-4 sm:px-8 lg:px-[165px]">
           <div className="pt-[40px] w-full">
             <div className="flex items-center">
-              <Image src={Arrow} alt="arrow back" className="w-6 h-6" />
+              <Image 
+                src={Arrow} 
+                alt="arrow back" 
+                className="w-6 h-6 cursor-pointer hover:opacity-70 transition-opacity" 
+                onClick={handleGoBack}
+              />
               <p className="text-[32px] sm:text-[48px] ml-[16px] font-bold">Atendimento</p>
             </div>
           </div>
@@ -256,11 +272,13 @@ export default function Atendimento() {
           </div>
 
           <div className="flex justify-center sm:justify-end mt-8 mb-8">
-            <Botao
-              text="Nova Consulta"
-              color="#50E678"
-              image_src="/Vector.svg"
-            />
+            <div onClick={handleNovaConsulta}>
+              <Botao
+                text="Nova Consulta"
+                color="#50E678"
+                image_src="/Vector.svg"
+              />
+            </div>
           </div>
         </div>
       </div>
