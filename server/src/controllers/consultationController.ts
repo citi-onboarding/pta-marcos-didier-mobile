@@ -106,6 +106,27 @@ class consultationController implements Crud {
         .send({ error: "Erro interno ao buscar consultas" });
     }
   };
+
+  getConsultationDetailsByConsultationId = async (
+    request: Request,
+    response: Response
+  ) => {
+    try {
+      const { id } = request.params;
+      const details =
+        await this.consultationRepo.getConsultationDetailsByConsultationId(id);
+
+      if (!details)
+        return response.status(404).send({ error: "Consulta não encontrada" });
+
+      return response.status(200).send(details);
+    } catch (error) {
+      console.error("Erro ao buscar detalhes da consulta:", error);
+      return response
+        .status(500)
+        .send({ error: "Erro interno ao buscar detalhes da consulta" });
+    }
+  };
 }
 
 export default new consultationController();

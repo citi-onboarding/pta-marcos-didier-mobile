@@ -26,6 +26,12 @@ routes.get(
   consultationController.getConsultationForHistoric
 );
 
+//detalhes da consulta
+routes.get(
+  "/consultation/details/:id",
+  consultationController.getConsultationDetailsByConsultationId
+);
+
 // rota dinâmica de id deve ficar após rotas estáticas para evitar conflito com '/cards', '/pet', etc.
 routes.get("/consultation/:id", consultationController.getById);
 
