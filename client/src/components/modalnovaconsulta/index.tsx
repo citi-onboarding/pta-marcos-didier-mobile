@@ -3,13 +3,12 @@ import { btfechar, citipetlogo } from "@/assets";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { time } from "console";
 
-export interface modalprops {
-  abrirModal: (openclose: boolean) => void;
-}
+type ModalNovaConsultaProps = {
+  onClose: () => void;
+};
 
-export default function ModalNovaConsulta(props: modalprops) {
+export default function ModalNovaConsulta({ onClose }: ModalNovaConsultaProps) {
   type FormData = {
     tipodeconsulta: string;
     data: string;
@@ -39,7 +38,7 @@ export default function ModalNovaConsulta(props: modalprops) {
             src={btfechar}
             alt="btfechar"
             className="ml-[245px]"
-            onClick={() => props.abrirModal(false)}
+            onClick={onClose}
           />
         </div>
       </div>
