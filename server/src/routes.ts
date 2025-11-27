@@ -14,6 +14,7 @@ routes.post("/pet", petController.create);
 routes.get("/pet", petController.get);
 routes.delete("/pet/:id", petController.delete);
 routes.put("/pet/:id", petController.update);
+routes.get("/pet/:id", petController.getById);
 
 // ROTAS DE CONSULTAS
 
