@@ -33,6 +33,11 @@ routes.get(
   consultationController.getConsultationForHistoric
 );
 
+routes.get(
+  "/consultation/drcards/:drName",
+  consultationController.getCardsByDr
+);
+
 //detalhes da consulta
 routes.get(
   "/consultation/details/:id",

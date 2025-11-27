@@ -4,7 +4,7 @@ import Card from "@/components/Card";
 import Botao from "@/components/Botao";
 import Image from "next/image";
 import Arrow from "@/assets/arrow_back.svg";
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import cat from "@/assets/cat.svg";
 import dog from "@/assets/dog.png";
@@ -20,165 +20,104 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import calendar_icon from "@/assets/calendar_month.svg";
+import api from "@/services/api";
+import { useRouter } from "next/navigation";
+
+function getConsultationDate(date: string, time: string) {
+  const [day, month] = date.split("/").map(Number); // dd/mm
+  const [hour, minute] = time.split(":").map(Number); // hh:mm
+  const now = new Date();
+  const year = now.getFullYear();
+  return new Date(year, month - 1, day, hour, minute); // mês em JS começa no 0
+}
+
+function isPastConsultation(date: string, time: string) {
+  const consultaDate = getConsultationDate(date, time);
+  const now = new Date();
+  return consultaDate < now;
+}
+
+type Consultation = {
+  id: string;
+  type_appointment: string;
+  patientName: string;
+  ownerName: string;
+  doctorName: string;
+  date: string;
+  time: string;
+  animal?:
+    | "Bode"
+    | "Gato"
+    | "Porco"
+    | "Girafa"
+    | "Cavalo"
+    | "Cachorro"
+    | string;
+  animalIcon?: any;
+  color?: string;
+};
 
 export default function Atendimento() {
+  const router = useRouter();
+
   const [date, setDate] = React.useState<Date | undefined>(undefined);
   const [open, setOpen] = React.useState(false);
   const [selectedTab, setSelectedTab] = React.useState<
     "agendamento" | "historico"
   >("agendamento");
 
-  const cardsMock = [
-    {
-      type_appointment: "Retorno",
-      patientName: "Sara",
-      ownerName: "Vico Mac",
-      doctorName: "Marcelo",
-      date: "20/11",
-      time: "11:00",
-      animalIcon: cat,
-      color: "bg-[#BFB5FF]",
-    },
-    {
-      type_appointment: "Primeira consulta",
-      patientName: "Rex",
-      ownerName: "Ana Paula",
-      doctorName: "João",
-      date: "20/11",
-      time: "12:30",
-      animalIcon: dog,
-      color: "bg-[#FF6419]",
-    },
-    {
-      type_appointment: "Vacinacao",
-      patientName: "Bela",
-      ownerName: "Carlos",
-      doctorName: "Mariana",
-      date: "20/11",
-      time: "14:00",
-      animalIcon: sheep,
-      color: "bg-[#9CFF95]",
-    },
-    {
-      type_appointment: "Checkup",
-      patientName: "Estrela",
-      ownerName: "Luisa",
-      doctorName: "Pedro",
-      date: "20/11",
-      time: "15:30",
-      animalIcon: horse,
-      color: "bg-[#AAE1FF]",
-    },
-    {
-      type_appointment: "Historico",
-      patientName: "Porquinho",
-      ownerName: "Marco",
-      doctorName: "Fernanda",
-      date: "21/11",
-      time: "09:00",
-      animalIcon: pig,
-      color: "bg-[#AAE1FF]",
-    },
+  const [loading, setLoading] = React.useState(false);
+  const [consultations, setConsultations] = React.useState<Consultation[]>([]);
 
-    {
-      type_appointment: "Retorno",
-      patientName: "Luna",
-      ownerName: "Sofia",
-      doctorName: "Ricardo",
-      date: "21/11",
-      time: "10:30",
-      animalIcon: cat,
-      color: "bg-[#BFB5FF]",
-    },
+  // normaliza acentos / espaços
+  function normalizeString(str?: string) {
+    if (!str) return "";
+    return str
+      .toString()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .replace(/\s+/g, "");
+  }
 
-    {
-      type_appointment: "Retorno",
-      patientName: "Luna",
-      ownerName: "Sofia",
-      doctorName: "Ricardo",
-      date: "21/11",
-      time: "10:30",
-      animalIcon: cat,
-      color: "bg-[#BFB5FF]",
-    },
+  function getAnimalIcon(especie?: string) {
+    const s = normalizeString(especie);
+    if (!s) return cat; // default
+    if (s.includes("gato")) return cat;
+    if (s.includes("cachorro")) return dog;
+    if (s.includes("bode")) return sheep;
+    if (s.includes("cavalo")) return horse;
+    if (s.includes("porco")) return pig;
+    if (s.includes("girafa")) return cow; // placeholder
+    return cat;
+  }
 
-    {
-      type_appointment: "Retorno",
-      patientName: "Luna",
-      ownerName: "Sofia",
-      doctorName: "Ricardo",
-      date: "21/11",
-      time: "10:30",
-      animalIcon: cat,
-      color: "bg-[#BFB5FF]",
-    },
+  useEffect(() => {
+    const fetchConsultations = async () => {
+      try {
+        setLoading(true);
+        const response = await api.get("/consultation/cards");
+        const mapped = response.data.map((item: any) => ({
+          id: item.id,
+          type_appointment: item.tipo,
+          patientName: item.paciente.nomeDoAnimal,
+          ownerName: item.paciente.nomeDono,
+          doctorName: item.medico,
+          date: item.data,
+          time: item.hora,
+          animal: item.paciente.especie,
+          animalIcon: getAnimalIcon(item.paciente?.especie),
+        }));
+        setConsultations(mapped);
+      } catch (error) {
+        console.error("Erro ao buscar consultas:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    {
-      type_appointment: "Retorno",
-      patientName: "Luna",
-      ownerName: "Sofia",
-      doctorName: "Ricardo",
-      date: "21/11",
-      time: "10:30",
-      animalIcon: cat,
-      color: "bg-[#BFB5FF]",
-    },
-
-    {
-      type_appointment: "Retorno",
-      patientName: "Luna",
-      ownerName: "Sofia",
-      doctorName: "Ricardo",
-      date: "21/11",
-      time: "10:30",
-      animalIcon: cat,
-      color: "bg-[#BFB5FF]",
-    },
-
-    {
-      type_appointment: "Retorno",
-      patientName: "Luna",
-      ownerName: "Sofia",
-      doctorName: "Ricardo",
-      date: "21/11",
-      time: "10:30",
-      animalIcon: cat,
-      color: "bg-[#BFB5FF]",
-    },
-
-    {
-      type_appointment: "Retorno",
-      patientName: "Luna",
-      ownerName: "Sofia",
-      doctorName: "Ricardo",
-      date: "21/11",
-      time: "10:30",
-      animalIcon: cat,
-      color: "bg-[#BFB5FF]",
-    },
-
-    {
-      type_appointment: "Retorno",
-      patientName: "Luna",
-      ownerName: "Sofia",
-      doctorName: "Ricardo",
-      date: "21/11",
-      time: "10:30",
-      animalIcon: cat,
-      color: "bg-[#BFB5FF]",
-    },
-
-    {
-      type_appointment: "Retorno",
-      patientName: "Luna",
-      ownerName: "Sofia",
-      doctorName: "Ricardo",
-      date: "21/11",
-      time: "10:30",
-      animalIcon: cat,
-      color: "bg-[#BFB5FF]",
-    }
-  ];
+    fetchConsultations();
+  }, []);
 
   type FormData = {
     doctor: string;
@@ -186,9 +125,34 @@ export default function Atendimento() {
 
   const { register, handleSubmit } = useForm<FormData>();
 
-  function onSubmit(data: FormData) {
-    console.log(data);
-    alert("Pesquisa enviada!");
+  async function onSubmit(data: FormData) {
+    try {
+      setLoading(true);
+      const doctor = (data.doctor || "").trim();
+      let response;
+      if (!doctor) {
+        response = await api.get("/consultation/cards");
+      } else {
+        const encoded = encodeURIComponent(doctor);
+        response = await api.get(`/consultation/drcards/${encoded}`);
+      }
+      const mapped = response.data.map((item: any) => ({
+        id: item.id,
+        type_appointment: item.tipo,
+        patientName: item.paciente.nomeDoAnimal,
+        ownerName: item.paciente.nomeDono,
+        doctorName: item.medico,
+        date: item.data,
+        time: item.hora,
+        animal: item.paciente.especie,
+        animalIcon: getAnimalIcon(item.paciente?.especie),
+      }));
+      setConsultations(mapped);
+    } catch (error) {
+      console.error("Erro ao buscar consultas por médico:", error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -205,13 +169,17 @@ export default function Atendimento() {
               <div className="w-6 h-6 sm:w-8 sm:h-8">
                 <Image src={Arrow} alt="arrow back" className="w-full h-full" />
               </div>
-              <p className="text-2xl sm:text-3xl lg:text-[48px] ml-4 font-bold">Atendimento</p>
+              <p className="text-2xl sm:text-3xl lg:text-[48px] ml-4 font-bold">
+                Atendimento
+              </p>
             </div>
           </div>
 
           <div className="w-full max-w-2xl mt-4 lg:mt-6">
             <div className="w-full">
-              <p className="text-lg sm:text-xl lg:text-[24px] font-medium">Qual é o médico?</p>
+              <p className="text-lg sm:text-xl lg:text-[24px] font-medium">
+                Qual é o médico?
+              </p>
             </div>
 
             <div className="w-full mt-6 items-center flex flex-col sm:flex-row gap-4">
@@ -227,7 +195,7 @@ export default function Atendimento() {
               </div>
               <div className="w-full sm:w-auto">
                 <button
-                  type="submit"
+                  onClick={() => handleSubmit(onSubmit)()}
                   className="w-full sm:w-[116px] h-10 sm:h-[42px] bg-[#7D1AD7] text-white font-semibold rounded-full transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none text-sm sm:text-base"
                 >
                   Buscar
@@ -241,7 +209,9 @@ export default function Atendimento() {
               <button
                 onClick={() => setSelectedTab("agendamento")}
                 className={`flex-1 lg:w-[159px] h-12 lg:h-[49px] rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none text-sm sm:text-base font-medium ${
-                  selectedTab === "agendamento" ? "bg-[#FFFFFF] shadow-sm" : "bg-[#F0F0F0]"
+                  selectedTab === "agendamento"
+                    ? "bg-[#FFFFFF] shadow-sm"
+                    : "bg-[#F0F0F0]"
                 }`}
               >
                 Agendamento
@@ -250,7 +220,9 @@ export default function Atendimento() {
               <button
                 onClick={() => setSelectedTab("historico")}
                 className={`flex-1 lg:w-[92px] h-12 lg:h-[42px] rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none text-sm sm:text-base font-medium ${
-                  selectedTab === "historico" ? "bg-[#FFFFFF] shadow-sm" : "bg-[#F0F0F0]"
+                  selectedTab === "historico"
+                    ? "bg-[#FFFFFF] shadow-sm"
+                    : "bg-[#F0F0F0]"
                 }`}
               >
                 Histórico
@@ -272,7 +244,6 @@ export default function Atendimento() {
                           year: "2-digit",
                         })
                       : "dd/mm/aa"}
-
                     <Image
                       src={calendar_icon}
                       alt="calendar icon"
@@ -295,7 +266,7 @@ export default function Atendimento() {
                   />
                 </PopoverContent>
               </Popover>
-              
+
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -310,7 +281,6 @@ export default function Atendimento() {
                           year: "2-digit",
                         })
                       : "dd/mm/aa"}
-
                     <Image
                       src={calendar_icon}
                       alt="calendar icon"
@@ -328,7 +298,6 @@ export default function Atendimento() {
                     captionLayout="dropdown"
                     onSelect={(date) => {
                       setDate(date);
-                      setOpen(false);
                     }}
                   />
                 </PopoverContent>
@@ -337,17 +306,31 @@ export default function Atendimento() {
           </div>
 
           <div className="flex-1 flex flex-col mt-6">
-            <div className="w-full overflow-y-auto" style={{ maxHeight: 'calc(100vh - 400px)' }}>
+            <div
+              className="w-full overflow-y-auto"
+              style={{ maxHeight: "calc(100vh - 400px)" }}
+            >
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 pb-6">
-                {cardsMock.map((card, idx) => (
-                  <Card
-                    key={idx}
-                    {...card}
-                    color={
-                      selectedTab === "historico" ? "bg-[#F0F0F0]" : card.color
-                    }
-                  />
-                ))}
+                {loading ? (
+                  // placeholder simples; troque por skeleton se tiver
+                  <div className="col-span-full text-center text-gray-500">
+                    Carregando...
+                  </div>
+                ) : (
+                  consultations
+                    .filter((card) =>
+                      selectedTab === "historico"
+                        ? isPastConsultation(card.date, card.time)
+                        : !isPastConsultation(card.date, card.time)
+                    )
+                    .map((card, idx) => (
+                      <Card
+                        key={card.id ?? idx}
+                        {...card}
+                        isHistorical={selectedTab === "historico"}
+                      />
+                    ))
+                )}
               </div>
             </div>
 
@@ -357,6 +340,7 @@ export default function Atendimento() {
                   text="Nova Consulta"
                   color="#50E678"
                   image_src="/Vector.svg"
+                  onClick={() => router.push("/cadastro")}
                 />
               </div>
             </div>

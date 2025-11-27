@@ -8,6 +8,7 @@ export class consultationRepository {
     try {
       const consultations = await prisma.consulta.findMany({
         select: {
+          id: true,
           data: true,
           hora: true,
           medico: true,
@@ -100,6 +101,35 @@ export class consultationRepository {
         "Erro ao buscar detalhes da consulta e histórico do paciente:",
         error
       );
+      throw error;
+    }
+  }
+
+  async getCardsByDr(drName: string) {
+    try {
+      const consultations = await prisma.consulta.findMany({
+        where: {
+          medico: drName,
+        },
+        select: {
+          id: true,
+          data: true,
+          hora: true,
+          medico: true,
+          tipo: true,
+          paciente: {
+            select: {
+              idade: true,
+              especie: true,
+              nomeDono: true,
+              nomeDoAnimal: true,
+            },
+          },
+        },
+      });
+      return consultations;
+    } catch (error) {
+      console.error("Erro ao retornar todas as consultas:", error);
       throw error;
     }
   }
