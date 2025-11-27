@@ -4,7 +4,7 @@ import Card from "@/components/Card";
 import Botao from "@/components/Botao";
 import Image from "next/image";
 import Arrow from "@/assets/arrow_back.svg";
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import cat from "@/assets/cat.svg";
 import dog from "@/assets/dog.png";
@@ -20,24 +20,21 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import calendar_icon from "@/assets/calendar_month.svg";
-import { useEffect } from "react";
 import api from "@/services/api";
+import { useRouter } from "next/navigation";
 
 function getConsultationDate(date: string, time: string) {
-  const [day, month] = date.split("/").map(Number); //recebe a data do formato dd/mm e transforma em numeros
-  const [hour, minute] = time.split(":").map(Number); //recebe a hora do formato hh:mm e transforma em numeros
-
-  const now = new Date(); //pega a data atual
-  const year = now.getFullYear(); //pega o ano atual
-
-  return new Date(year, month - 1, day, hour, minute); //retorna um objeto Date com a data e hora da consulta
-} //mes -1 aq pq os meses em JS começam do 0
+  const [day, month] = date.split("/").map(Number); // dd/mm
+  const [hour, minute] = time.split(":").map(Number); // hh:mm
+  const now = new Date();
+  const year = now.getFullYear();
+  return new Date(year, month - 1, day, hour, minute); // mês em JS começa no 0
+}
 
 function isPastConsultation(date: string, time: string) {
   const consultaDate = getConsultationDate(date, time);
   const now = new Date();
-
-  return consultaDate < now; //retorna true se a consulta ja passou
+  return consultaDate < now;
 }
 
 type Consultation = {
@@ -61,6 +58,8 @@ type Consultation = {
 };
 
 export default function Atendimento() {
+  const router = useRouter();
+
   const [date, setDate] = React.useState<Date | undefined>(undefined);
   const [open, setOpen] = React.useState(false);
   const [selectedTab, setSelectedTab] = React.useState<
@@ -70,7 +69,7 @@ export default function Atendimento() {
   const [loading, setLoading] = React.useState(false);
   const [consultations, setConsultations] = React.useState<Consultation[]>([]);
 
-  //COPILOT
+  // normaliza acentos / espaços
   function normalizeString(str?: string) {
     if (!str) return "";
     return str
@@ -81,30 +80,26 @@ export default function Atendimento() {
       .replace(/\s+/g, "");
   }
 
-  //COPILOT
   function getAnimalIcon(especie?: string) {
     const s = normalizeString(especie);
-    if (!s) return cat; // gato eh o default
+    if (!s) return cat; // default
     if (s.includes("gato")) return cat;
     if (s.includes("cachorro")) return dog;
     if (s.includes("bode")) return sheep;
     if (s.includes("cavalo")) return horse;
     if (s.includes("porco")) return pig;
-    if (s.includes("girafa")) return cow;
+    if (s.includes("girafa")) return cow; // placeholder
     return cat;
   }
 
-  //CRIEI
   useEffect(() => {
     const fetchConsultations = async () => {
       try {
         setLoading(true);
-        const response = await api.get("/consultation/cards"); //api.metodo("rota")
-
-        const mapped = response.data.map((item: any, index: number) => ({
-          // backend retorna: { data, hora, medico, tipo, paciente: { especie, nomeDoAnimal, nomeDono } }
+        const response = await api.get("/consultation/cards");
+        const mapped = response.data.map((item: any) => ({
           id: item.id,
-          type_appointment: item.tipo, // corresponde a `tipo` no backend
+          type_appointment: item.tipo,
           patientName: item.paciente.nomeDoAnimal,
           ownerName: item.paciente.nomeDono,
           doctorName: item.medico,
@@ -113,8 +108,6 @@ export default function Atendimento() {
           animal: item.paciente.especie,
           animalIcon: getAnimalIcon(item.paciente?.especie),
         }));
-
-        console.log("consultation response:", response.data);
         setConsultations(mapped);
       } catch (error) {
         console.error("Erro ao buscar consultas:", error);
@@ -135,23 +128,17 @@ export default function Atendimento() {
   async function onSubmit(data: FormData) {
     try {
       setLoading(true);
-
       const doctor = (data.doctor || "").trim();
-
       let response;
-
       if (!doctor) {
-        // se vazio, volta a lista completa
         response = await api.get("/consultation/cards");
       } else {
         const encoded = encodeURIComponent(doctor);
         response = await api.get(`/consultation/drcards/${encoded}`);
       }
-
-      const mapped = response.data.map((item: any, index: number) => ({
-        // backend retorna: { data, hora, medico, tipo, paciente: { especie, nomeDoAnimal, nomeDono } }
+      const mapped = response.data.map((item: any) => ({
         id: item.id,
-        type_appointment: item.tipo, // corresponde a `tipo` no backend
+        type_appointment: item.tipo,
         patientName: item.paciente.nomeDoAnimal,
         ownerName: item.paciente.nomeDono,
         doctorName: item.medico,
@@ -160,7 +147,6 @@ export default function Atendimento() {
         animal: item.paciente.especie,
         animalIcon: getAnimalIcon(item.paciente?.especie),
       }));
-
       setConsultations(mapped);
     } catch (error) {
       console.error("Erro ao buscar consultas por médico:", error);
@@ -170,81 +156,86 @@ export default function Atendimento() {
   }
 
   return (
-    <div className="flex flex-1 flex-col bg-[#FFFFFF] items-center h-screen overflow-hidden">
-      <div className="w-[1920px] h-[1080px] flex flex-col overflow-hidden">
-        <div className="w-full h-[114px]">
+    <div className="flex flex-1 flex-col bg-[#FFFFFF] min-h-screen">
+      <div className="w-full flex flex-col">
+        <div className="w-full">
           <NavBar />
           <div className="h-px w-full bg-gray-200" role="separator" />
         </div>
 
-        <div className="w-full">
-          <div className="pt-[40px] w-full ml-[165px]">
-            <div className="flex items-center mr-[100px]">
-              <Image src={Arrow} alt="arrow back" />
-              <p className="text-[48px] ml-[16px] font-bold">Atendimento</p>
+        <div className="w-full px-4 sm:px-8 lg:px-[165px] flex flex-col h-full">
+          <div className="pt-[40px] w-full">
+            <div className="flex items-center">
+              <div className="w-6 h-6 sm:w-8 sm:h-8">
+                <Image src={Arrow} alt="arrow back" className="w-full h-full" />
+              </div>
+              <p className="text-2xl sm:text-3xl lg:text-[48px] ml-4 font-bold">
+                Atendimento
+              </p>
             </div>
           </div>
 
-          <div className="w-[660px] h-[100px] mt-[16px] bg-[#FFFFFF] ml-[165px]">
-            <div className="w-[660px] h-[26px] text-[24px] text-color-[#000000]">
-              <p>Qual é o médico?</p>
+          <div className="w-full max-w-2xl mt-4 lg:mt-6">
+            <div className="w-full">
+              <p className="text-lg sm:text-xl lg:text-[24px] font-medium">
+                Qual é o médico?
+              </p>
             </div>
 
-            <div className="w-[660px] h-[50px] mt-[24px] items-center flex">
-              <div className="w-[400px] h-[50px]">
-                <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="w-full mt-6 items-center flex flex-col sm:flex-row gap-4">
+              <div className="w-full sm:max-w-md">
+                <form onSubmit={handleSubmit(onSubmit)} className="w-full">
                   <input
                     type="text"
                     placeholder="Pesquise Aqui..."
                     {...register("doctor")}
-                    className="w-[400px] h-[50px] pl-[16px] rounded-[8px] border border-black outline-none"
+                    className="w-full h-12 sm:h-[50px] pl-4 rounded-lg border border-gray-400 outline-none focus:border-black focus:ring-1 focus:ring-black transition-colors text-base"
                   />
                 </form>
               </div>
-              <div className="w-[116px] h-[42px] ml-[24px] bg-[#7D1AD7] rounded-full ">
+              <div className="w-full sm:w-auto">
                 <button
-                  className="w-[116px] h-[42px] text-white font-semibold rounded-full transition-colors duration-200 ease-in-out transform
-      hover:scale-105 active:scale-95 focus:outline-none "
                   onClick={() => handleSubmit(onSubmit)()}
+                  className="w-full sm:w-[116px] h-10 sm:h-[42px] bg-[#7D1AD7] text-white font-semibold rounded-full transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none text-sm sm:text-base"
                 >
-                  <span>Buscar</span>
+                  Buscar
                 </button>
               </div>
             </div>
           </div>
 
-          <div className="w-[1532px] h-[62px] mt-[40px] ml-[165px] bg-[#FFFFFF] flex">
-            <div className="w-[243px] h-[62px] bg-[#F0F0F0] flex items-center justify-center rounded-[8px]">
+          <div className="w-full mt-8 lg:mt-[40px] bg-[#FFFFFF] flex flex-col lg:flex-row lg:justify-between">
+            <div className="w-full lg:w-auto bg-[#F0F0F0] rounded-lg p-2 flex">
               <button
                 onClick={() => setSelectedTab("agendamento")}
-                className={`w-[159px] h-[49px] rounded-[8px] ml-[8px] transition-colors duration-200 ease-in-out transform
-      hover:scale-105 active:scale-95 focus:outline-none
-               ${
-                 selectedTab === "agendamento" ? "bg-[#FFFFFF]" : "bg-[#F0F0F0]"
-               }`}
+                className={`flex-1 lg:w-[159px] h-12 lg:h-[49px] rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none text-sm sm:text-base font-medium ${
+                  selectedTab === "agendamento"
+                    ? "bg-[#FFFFFF] shadow-sm"
+                    : "bg-[#F0F0F0]"
+                }`}
               >
                 Agendamento
               </button>
 
               <button
                 onClick={() => setSelectedTab("historico")}
-                className={`w-[92px] h-[42px] mr-[8px] rounded-[8px] transition-colors duration-200 ease-in-out transform
-      hover:scale-105 active:scale-95 focus:outline-none ${
-        selectedTab === "historico" ? "bg-[#FFFFFF]" : "bg-[#F0F0F0]"
-      }`}
+                className={`flex-1 lg:w-[92px] h-12 lg:h-[42px] rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none text-sm sm:text-base font-medium ${
+                  selectedTab === "historico"
+                    ? "bg-[#FFFFFF] shadow-sm"
+                    : "bg-[#F0F0F0]"
+                }`}
               >
                 Histórico
               </button>
             </div>
 
-            <div className="ml-[1015px]">
+            <div className="flex gap-4 mt-4 lg:mt-0">
               <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
                     id="date"
-                    className="w-[126px] h-[56px] justify-between font-normal transition-colors duration-200 ease-in-out transform
-      hover:scale-105 active:scale-95 focus:outline-none"
+                    className="flex-1 lg:w-[126px] h-12 lg:h-[56px] justify-between font-normal transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none text-sm sm:text-base"
                   >
                     {date
                       ? date.toLocaleDateString("pt-BR", {
@@ -253,11 +244,10 @@ export default function Atendimento() {
                           year: "2-digit",
                         })
                       : "dd/mm/aa"}
-
                     <Image
                       src={calendar_icon}
                       alt="calendar icon"
-                      className="w-[20px] h-[20px]"
+                      className="w-5 h-5"
                     />
                   </Button>
                 </PopoverTrigger>
@@ -276,15 +266,13 @@ export default function Atendimento() {
                   />
                 </PopoverContent>
               </Popover>
-            </div>
-            <div className="ml-[16px]">
-              <Popover open={open} onOpenChange={setOpen}>
+
+              <Popover>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
-                    id="date"
-                    className="w-[126px] h-[56px] justify-between font-normal transition-colors duration-200 ease-in-out transform
-      hover:scale-105 active:scale-95 focus:outline-none"
+                    id="date-end"
+                    className="flex-1 lg:w-[126px] h-12 lg:h-[56px] justify-between font-normal transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none text-sm sm:text-base"
                   >
                     {date
                       ? date.toLocaleDateString("pt-BR", {
@@ -293,11 +281,10 @@ export default function Atendimento() {
                           year: "2-digit",
                         })
                       : "dd/mm/aa"}
-
                     <Image
                       src={calendar_icon}
                       alt="calendar icon"
-                      className="w-[20px] h-[20px]"
+                      className="w-5 h-5"
                     />
                   </Button>
                 </PopoverTrigger>
@@ -311,7 +298,6 @@ export default function Atendimento() {
                     captionLayout="dropdown"
                     onSelect={(date) => {
                       setDate(date);
-                      setOpen(false);
                     }}
                   />
                 </PopoverContent>
@@ -319,29 +305,45 @@ export default function Atendimento() {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-x-4 gap-y-6 mt-2 mx-auto w-[1536px] h-[294px] ml-[165px] overflow-y-auto">
-            {/* CRIEI */}
-            {consultations
-              .filter((card) =>
-                selectedTab === "historico"
-                  ? isPastConsultation(card.date, card.time)
-                  : !isPastConsultation(card.date, card.time)
-              )
-              .map((card, idx) => (
-                <div key={card.id ?? idx}>
-                  <Card {...card} isHistorical={selectedTab === "historico"} />
-                </div>
-              ))}
+          <div className="flex-1 flex flex-col mt-6">
+            <div
+              className="w-full overflow-y-auto"
+              style={{ maxHeight: "calc(100vh - 400px)" }}
+            >
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 pb-6">
+                {loading ? (
+                  // placeholder simples; troque por skeleton se tiver
+                  <div className="col-span-full text-center text-gray-500">
+                    Carregando...
+                  </div>
+                ) : (
+                  consultations
+                    .filter((card) =>
+                      selectedTab === "historico"
+                        ? isPastConsultation(card.date, card.time)
+                        : !isPastConsultation(card.date, card.time)
+                    )
+                    .map((card, idx) => (
+                      <Card
+                        key={card.id ?? idx}
+                        {...card}
+                        isHistorical={selectedTab === "historico"}
+                      />
+                    ))
+                )}
+              </div>
+            </div>
 
-            <div />
-          </div>
-
-          <div className="w-[205px] h-[48px] ml-[1525px] mt-[60px]">
-            <Botao
-              text="Nova Consulta"
-              color="#50E678"
-              image_src="/Vector.svg"
-            />
+            <div className="w-full flex justify-center lg:justify-end mt-8 lg:mt-[60px] mb-8 flex-shrink-0">
+              <div className="w-full sm:w-auto max-w-xs lg:max-w-none">
+                <Botao
+                  text="Nova Consulta"
+                  color="#50E678"
+                  image_src="/Vector.svg"
+                  onClick={() => router.push("/cadastro")}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
