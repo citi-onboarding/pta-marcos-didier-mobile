@@ -1,0 +1,106 @@
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+export class consultationRepository {
+  async getAllConsultationsFromPatient() {
+    // para o card
+    try {
+      const consultations = await prisma.consulta.findMany({
+        select: {
+          data: true,
+          hora: true,
+          medico: true,
+          tipo: true,
+          paciente: {
+            select: {
+              especie: true,
+              nomeDoAnimal: true,
+              nomeDono: true,
+            },
+          },
+        },
+      });
+      return consultations;
+    } catch (error) {
+      console.error("Erro ao retornar todas as consultas:", error);
+      throw error;
+    }
+  }
+
+  async getAllConsultationsFromAPet(petid: string | number) {
+    // para o historico de consultas do pet
+    try {
+      const consultations = await prisma.consulta.findMany({
+        where: {
+          idPaciente: Number(petid),
+        },
+        select: {
+          data: true,
+          hora: true,
+          medico: true,
+          tipo: true,
+        },
+      });
+      return consultations;
+    } catch (error) {
+      console.error("Erro ao retornar todas as consultas:", error);
+      throw error;
+    }
+  }
+
+  async getConsultationDetailsByConsultationId(
+    consultationId: string | number
+  ) {
+    try {
+      const consulta = await prisma.consulta.findUnique({
+        // a variavel consulta guarda os dados da consulta e do paciente (com id pra usar dps)
+        where: { id: Number(consultationId) },
+        select: {
+          medico: true,
+          descricao: true,
+          tipo: true,
+          idPaciente: true, // pega o id pra pegar o historico dps
+          paciente: {
+            select: {
+              idade: true,
+              especie: true,
+              nomeDono: true,
+              nomeDoAnimal: true,
+            },
+          },
+        },
+      });
+
+      if (!consulta) return null;
+
+      const historico = await prisma.consulta.findMany({
+        // igual a funcao de cima que pegava so o historico
+        where: { idPaciente: Number(consulta.idPaciente) },
+        select: {
+          data: true,
+          hora: true,
+          medico: true,
+          tipo: true,
+        },
+      });
+
+      return {
+        // return formatado
+        paciente: consulta.paciente,
+        consulta: {
+          medico: consulta.medico,
+          descricao: consulta.descricao,
+          tipo: consulta.tipo,
+        },
+        historico,
+      };
+    } catch (error) {
+      console.error(
+        "Erro ao buscar detalhes da consulta e histórico do paciente:",
+        error
+      );
+      throw error;
+    }
+  }
+}

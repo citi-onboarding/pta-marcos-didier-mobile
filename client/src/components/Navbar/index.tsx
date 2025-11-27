@@ -1,34 +1,90 @@
-//por padrao, todos os componente do diretorio 'app' do Next.js são 'Server Components'
-//isso significa que eles sao renderizados no server e enviam apenas html puro para o navegador
-//para usar coisas como 'useState' ou outros Hooks do React, precisamo dizer explicitamente com 'use cliente' que este componente é um 'Client Componente'
 "use client"; 
 
 import { citipetlogo } from "@/assets"
 import { button_groups } from "@/assets"
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 
 export default function NavBar(){
 
     const [buttonSelected, setButtonSelected] = useState("atendimento");
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const router = useRouter();
+
+    const handleAtendimentoClick = () => {
+        setButtonSelected("atendimento");
+        router.push("/Atendimento");
+        setMobileMenuOpen(false);
+    };
+
+    const handleCadastroClick = () => {
+        setButtonSelected("cadastro");
+        router.push("/Cadastro");
+        setMobileMenuOpen(false);
+    };
 
     return(
-        <div className="ml-2 mr-2 flex w-full min-w-[675px] min-h-[80px] bg-white justify-between items-center p-5">
-            <div>
-                <img src={citipetlogo.src} alt="citipetlogo" className="w-[160px]"/>
+        <div className="mx-2 flex w-full bg-white justify-between items-center p-3 sm:p-5 min-h-[70px] sm:min-h-[80px]">
+            <div className="flex-shrink-0">
+                <img src={citipetlogo.src} alt="citipetlogo" className="w-[120px] sm:w-[160px]"/>
             </div>
-            <div className="space-x-8 flex">
+            
+            {/* Desktop Menu */}
+            <div className="hidden md:flex space-x-8">
                 <div className="space-y-1 flex flex-col items-center">
-                    <button onClick={() => setButtonSelected("cadastro")} className=" p-2 hover:bg-lime-300 hover:rounded-full transition-all duration-300 ease-in-out">Cadastro</button>
-                    <div className={`h-[2px] bg-green-500 transition-all duration-300 ease-in-out ${buttonSelected === "cadastro" ? "w-full" : "w-0"}`}></div>
-                </div>
-                <div className="space-y-1 flex flex-col items-center">
-                    <button onClick={() => setButtonSelected("atendimento")} className=" p-2 hover:bg-lime-300 hover:rounded-full transition-all duration-300 ease-in-out">Atendimento</button>
+                    <button onClick={handleAtendimentoClick} className="p-2 hover:bg-lime-300 hover:rounded-full transition-all duration-300 ease-in-out">
+                        Atendimento
+                    </button>
                     <div className={`h-[2px] bg-green-500 transition-all duration-300 ease-in-out ${buttonSelected === "atendimento" ? "w-full" : "w-0"}`}></div>
                 </div>
+                <div className="space-y-1 flex flex-col items-center">
+                    <button onClick={handleCadastroClick} className="p-2 hover:bg-lime-300 hover:rounded-full transition-all duration-300 ease-in-out">
+                        Cadastro
+                    </button>
+                    <div className={`h-[2px] bg-green-500 transition-all duration-300 ease-in-out ${buttonSelected === "cadastro" ? "w-full" : "w-0"}`}></div>
+                </div>
             </div>
-            <div>
-                <img src={button_groups.src} alt="button_groups" className="w-[220px]" />
+
+            {/* Mobile Menu Button */}
+            <div className="md:hidden">
+                <button
+                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                    className="p-2 rounded-md hover:bg-gray-100"
+                >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
             </div>
+
+            {/* Desktop Button Groups */}
+            <div className="hidden lg:block flex-shrink-0">
+                <img src={button_groups.src} alt="button_groups" className="w-[180px] xl:w-[220px]" />
+            </div>
+
+            {/* Mobile Menu */}
+            {mobileMenuOpen && (
+                <div className="absolute top-[70px] left-0 right-0 bg-white border-t border-gray-200 md:hidden z-50">
+                    <div className="px-4 py-2 space-y-2">
+                        <button
+                            onClick={handleAtendimentoClick}
+                            className={`block w-full text-left p-3 rounded-md transition-colors ${
+                                buttonSelected === "atendimento" ? "bg-green-100 text-green-700" : "hover:bg-gray-100"
+                            }`}
+                        >
+                            Atendimento
+                        </button>
+                        <button
+                            onClick={handleCadastroClick}
+                            className={`block w-full text-left p-3 rounded-md transition-colors ${
+                                buttonSelected === "cadastro" ? "bg-green-100 text-green-700" : "hover:bg-gray-100"
+                            }`}
+                        >
+                            Cadastro
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
