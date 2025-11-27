@@ -16,28 +16,32 @@ export default function CardConsulta(props: CardProps) {
 
   return (
     <div
-      className={`w-[510px] h-[82px] bg-[#F0F0F0] rounded-[16px] flex items-center gap-12`}
+      className={`w-full max-w-[510px] sm:max-w-[400px] xs:max-w-[320px] h-[82px] sm:h-[72px] xs:h-[64px] bg-[#F0F0F0] rounded-[16px] flex items-center gap-4 sm:gap-3 px-4`}
     >
-      <div className="w-[51px] h-[50px] bg-[#FFFFFFCC] rounded-[4px] ml-[24px]">
-        <div className="w-[39px] h-[15px] font-bold ml-[6px] mt-[2px] text-[14px]">
+      <div className="w-12 sm:w-10 xs:w-8 h-12 sm:h-10 xs:h-8 bg-[#FFFFFFCC] rounded-[4px] flex flex-col justify-center items-center">
+        <div className="font-bold text-[14px] sm:text-[13px] xs:text-[12px]">
           {data}
         </div>
-        <div className="w-[39px] h-[15px] font-bold ml-[7px] mt-[8px] text-[14px]">
+        <div className="font-bold text-[14px] sm:text-[13px] xs:text-[12px]">
           {time}
         </div>
       </div>
-      <div className="w-[106px] h-[15px] -mt-[10px]">
-        <span className="font-bold text-[14px]">{type_appointment} </span>
+
+      <div className="flex-1">
+        <span className="font-bold text-[14px] sm:text-[13px] xs:text-[12px]">
+          {type_appointment}
+        </span>
       </div>
 
-      <div className="w-[106px] h-[12px] text-[14px] -mt-[10px]">
+      <div className="flex-1 text-[14px] sm:text-[13px] xs:text-[12px]">
         {doctorName}
       </div>
+
       <div>
         <Image
           src={arrow_front}
           alt="Arrow Front"
-          className="w-[16px] h-[16px] ml-[30px]"
+          className="w-4 h-4 sm:w-3 sm:h-3"
         />
       </div>
     </div>

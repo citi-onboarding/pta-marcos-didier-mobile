@@ -55,53 +55,57 @@ export default function DetalheConsulta() {
 
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   return (
-    <div className="flex flex-1 flex-col bg-[#FFFFFF] items-center h-screen overflow-auto">
-      <div className="w-[1920px] h-[1080px] flex flex-col overflow-auto">
-        <div className="w-full h-[114px]">
+    <div className="w-full max-w-screen-2xl flex flex-col px-4 md:px-10 lg:px-20 mx-auto">
+      <div className="w-full flex flex-col overflow-auto">
+        <div className="w-full h-28">
           <NavBar />
           <div className="h-px w-full bg-gray-200" role="separator" />
         </div>
-        <div className="flex">
+        <div className="flex lg:flex-row lg:gap-20">
           <div className="flex flex-col">
-            <div className="mt-[48px] w-[624px] h-[53px] ml-[194px] flex items-center">
-              <div className="w-[32px] h-[32px]">
+            <div className="mt-8 w-full max-w-3xl flex items-center mx-auto lg:mx-0">
+              <div className="w-8 h-8">
                 <Image src={arrow} alt="Back arrow" />
               </div>
 
-              <div className="ml-[16px] font-bold text-[48px]">
+              <div className="ml-4 font-bold text-2xl md:text-3xl lg:text-4xl">
                 Detalhes da Consulta
               </div>
             </div>
 
-            <div className="ml-[194px] mt-[32px] w-[96px] h-[26px] text-[24px]">
-              <span className="font-bold">Paciente</span>
+            <div className="mt-6 w-full px-4 md:px-0">
+              <span className="font-bold text-xl md:text-2xl">Paciente</span>
             </div>
 
-            <div className="flex ml-[194px] mt-[32px] gap-6">
-              <div className="w-[295px] h-[299px]">
-                <Image src={Cat} alt="Cat" width={295} height={299} />
+            <div className="flex flex-col md:flex-row items-center md:items-start mt-8 gap-6 px-4 md:px-0">
+              <div className="w-48 h-48 md:w-[295px] md:h-[299px] flex-shrink-0">
+                <Image
+                  src={Cat}
+                  alt="Cat"
+                  width={240}
+                  height={240}
+                  className="w-full h-full object-cover"
+                />
               </div>
-              <div className="ml-[45px] mt-[56px]">
+              <div className="md:ml-6 mt-10 md:mt-14">
                 <div>
-                  <span className="font-bold text-[24px]">Luna</span>
+                  <span className="font-bold text-xl md:text-xl">Luna</span>
                 </div>
-                <div>
-                  <span className="text-[24px] mt-[12px]">5 anos</span>
+                <div className="mt-3">
+                  <span className="text-xl md:text-xl">5 anos</span>
                 </div>
-                <div className="mt-[126px] w-[101px] flex flex-col gap-[12px]">
-                  <div>
-                    <span className="text-[16px]">Lucas Gomes</span>
-                  </div>
-                  <div>Dr. Carlos</div>
+                <div className="mt-16 md:mt-28 w-full flex flex-col gap-2">
+                  <span className="text-base md:text-base">Lucas Gomes</span>
+                  <span className="text-base md:text-base">Dr. Carlos</span>
                 </div>
               </div>
             </div>
 
-            <div className="mt-[60px] w-[631px] h-[102px] ml-[194px]">
-              <div className="font-bold text-[16px]">
+            <div className="mt-10 w-full max-w-3xl mx-auto lg:mx-0 px-4">
+              <div className="font-bold text-base md:text-base">
                 Descrição do problema:
               </div>
-              <div className="mt-[12px] text-[16px]">
+              <div className="mt-3 text-base md:text-base">
                 Lorem Ipsum is simply dummy text of the printing and typesetting
                 industry. Lorem Ipsum has been the industry's standard dummy
                 text ever since the 1500s, when an unknown printer took a galley
@@ -110,54 +114,59 @@ export default function DetalheConsulta() {
               </div>
             </div>
 
-            <div className="ml-[194px] w-[294px] h-[30px] mt-[50px] flex gap-[16px] items-center">
-              <div className="font-bold text-[16px]">Tipo de Consulta:</div>
-              <div className="w-[101px] h-[30px] ml-[24px] bg-[#AAE1FF] flex items-center justify-center rounded-[4px]">
-                <span className="text-[16px]">Vacinação</span>
+            <div className="mt-4 w-full max-w-3xl mx-auto lg:mx-0 px-4 flex flex-col md:flex-row md:items-center gap-3">
+              <div className="font-bold text-base md:text-base">
+                Tipo de Consulta:
+              </div>
+              <div className="w-fit px-4 h-8 bg-[#AAE1FF] flex items-center justify-center rounded-md">
+                <span className="text-base md:text-base">Vacinação</span>
               </div>
             </div>
 
-            <div className="w-[624px] h-[138px] ml-[194px] mt-[40px] rounded-[24px] bg-[#FAFAFA] flex flex-col items-center">
-              <div className="mt-[24px]">
-                <span className="font-bold text-[16px]">
+            <div className="mt-6 w-full max-w-3xl mx-auto lg:mx-0 px-4">
+              <div className="rounded-2xl bg-[#FAFAFA] w-full flex flex-col items-center py-4">
+                <span className="font-bold text-base md:text-base">
                   Deseja realizar outra consulta?
                 </span>
-              </div>
 
-              <div className="mt-[16px]">
-                <Botao2
-                  text="Agendamento"
-                  color="#50E678"
-                  width="576px"
-                  height="48px"
-                  image_src="task_alt.svg"
-                  onClick={() => setIsModalOpen(true)}
-                />
+                <div className="mt-4 w-full flex justify-center">
+                  <Botao2
+                    text="Agendamento"
+                    color="#50E678"
+                    width="90%"
+                    height="48px"
+                    image_src="task_alt.svg"
+                    onClick={() => setIsModalOpen(true)}
+                  />
+                </div>
               </div>
-
               {isModalOpen && (
                 <ModalNovaConsulta onClose={() => setIsModalOpen(false)} />
               )}
             </div>
           </div>
-          <div className="w-[558px] mt-[133px] ml-[339px]">
+          <div className="w-full max-w-[558px] mt-14 lg:mx-0 px-4">
             <div>
-              <span className="font-bold text-[24px]">
+              <span className="font-bold text-[22px] md:text-[24px]">
                 Histórico de Consultas
               </span>
             </div>
 
             <div
-              className="grid grid-cols-1 gap-y-6 w-[558px] h-[448px] mt-[32px]
-  rounded-[24px] border border-dashed overflow-y-auto
-  justify-items-center pt-6"
+              className="grid grid-cols-1 gap-y-6 
+      w-full max-w-[400px] sm:max-w-[350px] md:max-w-[450px] 
+      mt-6
+      rounded-[24px] border border-dashed
+      justify-items-center 
+      pt-6 pb-6
+      min-h-[300px]"
             >
-              {consultaMock.map((card, idx) => (
+              {consultaMock.slice(0, 4).map((card, idx) => (
                 <CardConsulta key={idx} {...card} />
               ))}
             </div>
 
-            <div className="mt-[32px]"></div>
+            <div className="mt-8"></div>
           </div>
         </div>
       </div>
