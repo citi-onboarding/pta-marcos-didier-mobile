@@ -20,6 +20,28 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import calendar_icon from "@/assets/calendar_month.svg";
+import { useEffect } from "react";
+import api from "@/services/api";
+
+type Consultation = {
+  id: string;
+  type_appointment: string;
+  patientName: string;
+  ownerName: string;
+  doctorName: string;
+  date: string;
+  time: string;
+  animal?:
+    | "Bode"
+    | "Gato"
+    | "Porco"
+    | "Girafa"
+    | "Cavalo"
+    | "Cachorro"
+    | string;
+  animalIcon?: any;
+  color?: string;
+};
 
 export default function Atendimento() {
   const [date, setDate] = React.useState<Date | undefined>(undefined);
@@ -28,102 +50,64 @@ export default function Atendimento() {
     "agendamento" | "historico"
   >("agendamento");
 
-  const cardsMock = [
-    {
-      type_appointment: "Retorno",
-      patientName: "Sara",
-      ownerName: "Vico Mac",
-      doctorName: "Marcelo",
-      date: "20/11",
-      time: "11:00",
-      animalIcon: cat,
-      color: "bg-[#BFB5FF]",
-    },
-    {
-      type_appointment: "Primeira consulta",
-      patientName: "Rex",
-      ownerName: "Ana Paula",
-      doctorName: "João",
-      date: "20/11",
-      time: "12:30",
-      animalIcon: dog,
-      color: "bg-[#FF6419]",
-    },
-    {
-      type_appointment: "Vacinacao",
-      patientName: "Bela",
-      ownerName: "Carlos",
-      doctorName: "Mariana",
-      date: "20/11",
-      time: "14:00",
-      animalIcon: sheep,
-      color: "bg-[#9CFF95]",
-    },
-    {
-      type_appointment: "Checkup",
-      patientName: "Estrela",
-      ownerName: "Luisa",
-      doctorName: "Pedro",
-      date: "20/11",
-      time: "15:30",
-      animalIcon: horse,
-      color: "bg-[#AAE1FF]",
-    },
-    {
-      type_appointment: "Historico",
-      patientName: "Porquinho",
-      ownerName: "Marco",
-      doctorName: "Fernanda",
-      date: "21/11",
-      time: "09:00",
-      animalIcon: pig,
-      color: "bg-[#AAE1FF]",
-    },
+  const [loading, setLoading] = React.useState(false);
+  const [consultations, setConsultations] = React.useState<Consultation[]>([]);
 
-    {
-      type_appointment: "Retorno",
-      patientName: "Luna",
-      ownerName: "Sofia",
-      doctorName: "Ricardo",
-      date: "21/11",
-      time: "10:30",
-      animalIcon: cat,
-      color: "bg-[#BFB5FF]",
-    },
+  //COPILOT
+  function normalizeString(str?: string) {
+    if (!str) return "";
+    return str
+      .toString()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .replace(/\s+/g, "");
+  }
 
-    {
-      type_appointment: "Vacinacao",
-      patientName: "Max",
-      ownerName: "Bruno",
-      doctorName: "Camila",
-      date: "21/11",
-      time: "13:00",
-      animalIcon: dog,
-      color: "bg-[#9CFF95]",
-    },
+  //COPILOT
+  function getAnimalIcon(especie?: string) {
+    const s = normalizeString(especie);
+    if (!s) return cat; // gato eh o default
+    if (s.includes("gato")) return cat;
+    if (s.includes("cachorro")) return dog;
+    if (s.includes("bode")) return sheep;
+    if (s.includes("cavalo")) return horse;
+    if (s.includes("porco")) return pig;
+    if (s.includes("girafa")) return cow;
+    return cat;
+  }
 
-    {
-      type_appointment: "Checkup",
-      patientName: "Dolly",
-      ownerName: "Renata",
-      doctorName: "Lucas",
-      date: "21/11",
-      time: "16:00",
-      animalIcon: sheep,
-      color: "bg-[#AAE1FF]",
-    },
+  //CRIEI
+  useEffect(() => {
+    const fetchConsultations = async () => {
+      try {
+        setLoading(true);
+        const response = await api.get("/consultation/cards"); //api.metodo("rota")
 
-    {
-      type_appointment: "Primeira consulta",
-      patientName: "Touro",
-      ownerName: "Jorge",
-      doctorName: "Aline",
-      date: "22/11",
-      time: "11:30",
-      animalIcon: cow,
-      color: "bg-[#FF6419]",
-    },
-  ];
+        const mapped = response.data.map((item: any, index: number) => ({
+          // backend retorna: { data, hora, medico, tipo, paciente: { especie, nomeDoAnimal, nomeDono } }
+          id: item.id,
+          type_appointment: item.tipo, // corresponde a `tipo` no backend
+          patientName: item.paciente.nomeDoAnimal,
+          ownerName: item.paciente.nomeDono,
+          doctorName: item.medico,
+          date: item.data,
+          time: item.hora,
+          animal: item.paciente.especie,
+          animalIcon: getAnimalIcon(item.paciente?.especie),
+        }));
+
+        console.log("consultation response:", response.data);
+        setConsultations(mapped);
+      } catch (error) {
+        console.error("Erro ao buscar consultas:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchConsultations();
+  }, []);
 
   type FormData = {
     doctor: string;
@@ -131,9 +115,41 @@ export default function Atendimento() {
 
   const { register, handleSubmit } = useForm<FormData>();
 
-  function onSubmit(data: FormData) {
-    console.log(data);
-    alert("Pesquisa enviada!");
+  async function onSubmit(data: FormData) {
+    try {
+      setLoading(true);
+
+      const doctor = (data.doctor || "").trim();
+
+      let response;
+
+      if (!doctor) {
+        // se vazio, volta a lista completa
+        response = await api.get("/consultation/cards");
+      } else {
+        const encoded = encodeURIComponent(doctor);
+        response = await api.get(`/consultation/drcards/${encoded}`);
+      }
+
+      const mapped = response.data.map((item: any, index: number) => ({
+        // backend retorna: { data, hora, medico, tipo, paciente: { especie, nomeDoAnimal, nomeDono } }
+        id: item.id,
+        type_appointment: item.tipo, // corresponde a `tipo` no backend
+        patientName: item.paciente.nomeDoAnimal,
+        ownerName: item.paciente.nomeDono,
+        doctorName: item.medico,
+        date: item.data,
+        time: item.hora,
+        animal: item.paciente.especie,
+        animalIcon: getAnimalIcon(item.paciente?.especie),
+      }));
+
+      setConsultations(mapped);
+    } catch (error) {
+      console.error("Erro ao buscar consultas por médico:", error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -172,6 +188,7 @@ export default function Atendimento() {
                 <button
                   className="w-[116px] h-[42px] text-white font-semibold rounded-full transition-colors duration-200 ease-in-out transform
       hover:scale-105 active:scale-95 focus:outline-none "
+                  onClick={() => handleSubmit(onSubmit)()}
                 >
                   <span>Buscar</span>
                 </button>
@@ -180,7 +197,7 @@ export default function Atendimento() {
           </div>
 
           <div className="w-[1532px] h-[62px] mt-[40px] ml-[165px] bg-[#FFFFFF] flex">
-            <div className="w-[243px] h-[62px] bg-[#F0F0F0] flex items-center justify-center">
+            <div className="w-[243px] h-[62px] bg-[#F0F0F0] flex items-center justify-center rounded-[8px]">
               <button
                 onClick={() => setSelectedTab("agendamento")}
                 className={`w-[159px] h-[49px] rounded-[8px] ml-[8px] transition-colors duration-200 ease-in-out transform
@@ -286,14 +303,9 @@ export default function Atendimento() {
           </div>
 
           <div className="grid grid-cols-3 gap-x-4 gap-y-6 mt-2 mx-auto w-[1536px] h-[294px] ml-[165px] overflow-y-auto">
-            {cardsMock.map((card, idx) => (
-              <Card
-                key={idx}
-                {...card}
-                color={
-                  selectedTab === "historico" ? "bg-[#F0F0F0]" : card.color
-                }
-              />
+            {/* CRIEI */}
+            {consultations.map((card, idx) => (
+              <Card key={idx} {...card} />
             ))}
 
             <div />

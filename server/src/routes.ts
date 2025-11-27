@@ -1,6 +1,7 @@
 import express from "express";
 import userController from "./controllers/UserController";
-import consultationController from "./controllers/ConsultationController";
+// import consultationController from "./controllers/ConsultationController";
+import consultationController from "./controllers/consultationController";
 
 const routes = express.Router();
 
@@ -24,6 +25,11 @@ routes.get(
 routes.get(
   "/consultation/historic/:petid",
   consultationController.getConsultationForHistoric
+);
+
+routes.get(
+  "/consultation/drcards/:drName",
+  consultationController.getCardsByDr
 );
 
 //detalhes da consulta
