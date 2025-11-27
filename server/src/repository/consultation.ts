@@ -8,6 +8,7 @@ export class consultationRepository {
     try {
       const consultations = await prisma.consulta.findMany({
         select: {
+          id: true,
           data: true,
           hora: true,
           medico: true,
@@ -111,6 +112,7 @@ export class consultationRepository {
           medico: drName,
         },
         select: {
+          id: true,
           data: true,
           hora: true,
           medico: true,

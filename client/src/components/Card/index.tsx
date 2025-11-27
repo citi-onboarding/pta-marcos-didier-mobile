@@ -1,9 +1,11 @@
 "use client";
 import React from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import alarm from "@/assets/alarm.svg";
 
 interface CardProps {
+  id?: string;
   patientName: string;
   ownerName: string;
   doctorName: string;
@@ -11,6 +13,7 @@ interface CardProps {
   time: string;
   date: string;
   type_appointment: string;
+  isHistorical?: boolean;
 }
 
 const colorMap: Record<string, string> = {
@@ -22,6 +25,7 @@ const colorMap: Record<string, string> = {
 
 export default function Card(props: CardProps) {
   const {
+    id,
     patientName,
     ownerName,
     doctorName,
@@ -29,11 +33,24 @@ export default function Card(props: CardProps) {
     time,
     date,
     type_appointment,
+    isHistorical,
   } = props;
+
+  const router = useRouter();
+
+  function handleClick() {
+    if (!id) return;
+    router.push(`/DetalheConsulta/${id}`);
+  }
+
+  const bgClass = isHistorical
+    ? "bg-[#F0F0F0]"
+    : colorMap[type_appointment] || "bg-white";
 
   return (
     <div
-      className={`w-[495px] h-[135px] ${colorMap[type_appointment]} rounded-[16px] flex items-center gap-8`}
+      className={`w-[495px] h-[135px] ${bgClass} rounded-[16px] flex items-center gap-8 cursor-pointer`}
+      onClick={handleClick}
     >
       <div className="w-[51px] h-[90px] bg-[#FFFFFFCC] rounded-[4px] ml-[24px]">
         <Image

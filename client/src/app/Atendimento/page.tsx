@@ -23,6 +23,23 @@ import calendar_icon from "@/assets/calendar_month.svg";
 import { useEffect } from "react";
 import api from "@/services/api";
 
+function getConsultationDate(date: string, time: string) {
+  const [day, month] = date.split("/").map(Number); //recebe a data do formato dd/mm e transforma em numeros
+  const [hour, minute] = time.split(":").map(Number); //recebe a hora do formato hh:mm e transforma em numeros
+
+  const now = new Date(); //pega a data atual
+  const year = now.getFullYear(); //pega o ano atual
+
+  return new Date(year, month - 1, day, hour, minute); //retorna um objeto Date com a data e hora da consulta
+} //mes -1 aq pq os meses em JS começam do 0
+
+function isPastConsultation(date: string, time: string) {
+  const consultaDate = getConsultationDate(date, time);
+  const now = new Date();
+
+  return consultaDate < now; //retorna true se a consulta ja passou
+}
+
 type Consultation = {
   id: string;
   type_appointment: string;
@@ -304,9 +321,17 @@ export default function Atendimento() {
 
           <div className="grid grid-cols-3 gap-x-4 gap-y-6 mt-2 mx-auto w-[1536px] h-[294px] ml-[165px] overflow-y-auto">
             {/* CRIEI */}
-            {consultations.map((card, idx) => (
-              <Card key={idx} {...card} />
-            ))}
+            {consultations
+              .filter((card) =>
+                selectedTab === "historico"
+                  ? isPastConsultation(card.date, card.time)
+                  : !isPastConsultation(card.date, card.time)
+              )
+              .map((card, idx) => (
+                <div key={card.id ?? idx}>
+                  <Card {...card} isHistorical={selectedTab === "historico"} />
+                </div>
+              ))}
 
             <div />
           </div>
