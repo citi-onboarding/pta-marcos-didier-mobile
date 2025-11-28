@@ -132,6 +132,7 @@ export default function Atendimento() {
       let response;
       if (!doctor) {
         response = await api.get("/consultation/cards");
+        console.log(response)
       } else {
         const encoded = encodeURIComponent(doctor);
         response = await api.get(`/consultation/drcards/${encoded}`);
@@ -166,7 +167,7 @@ export default function Atendimento() {
         <div className="w-full px-4 sm:px-8 lg:px-[165px] flex flex-col h-full">
           <div className="pt-[40px] w-full">
             <div className="flex items-center">
-              <div className="w-6 h-6 sm:w-8 sm:h-8">
+              <div className="w-6 h-6 sm:w-8 sm:h-8 cursor-pointer" onClick={() => router.back()}>
                 <Image src={Arrow} alt="arrow back" className="w-full h-full" />
               </div>
               <p className="text-2xl sm:text-3xl lg:text-[48px] ml-4 font-bold">
@@ -219,7 +220,7 @@ export default function Atendimento() {
 
               <button
                 onClick={() => setSelectedTab("historico")}
-                className={`flex-1 lg:w-[92px] h-12 lg:h-[42px] rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none text-sm sm:text-base font-medium ${
+                className={`flex-1 lg:w-[92px] h-12 lg:h-[42px] rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none text-sm sm:text-base font-medium flex items-center justify-center ${
                   selectedTab === "historico"
                     ? "bg-[#FFFFFF] shadow-sm"
                     : "bg-[#F0F0F0]"
@@ -235,7 +236,7 @@ export default function Atendimento() {
                   <Button
                     variant="outline"
                     id="date"
-                    className="flex-1 lg:w-[126px] h-12 lg:h-[56px] justify-between font-normal transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none text-sm sm:text-base"
+                    className="flex-1 lg:w-[126px] h-12 lg:h-[56px] justify-center font-normal transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none text-sm sm:text-base"
                   >
                     {date
                       ? date.toLocaleDateString("pt-BR", {
@@ -247,7 +248,7 @@ export default function Atendimento() {
                     <Image
                       src={calendar_icon}
                       alt="calendar icon"
-                      className="w-5 h-5"
+                      className="w-5 h-5 ml-2"
                     />
                   </Button>
                 </PopoverTrigger>
@@ -272,7 +273,7 @@ export default function Atendimento() {
                   <Button
                     variant="outline"
                     id="date-end"
-                    className="flex-1 lg:w-[126px] h-12 lg:h-[56px] justify-between font-normal transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none text-sm sm:text-base"
+                    className="flex-1 lg:w-[126px] h-12 lg:h-[56px] justify-center font-normal transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none text-sm sm:text-base"
                   >
                     {date
                       ? date.toLocaleDateString("pt-BR", {
@@ -284,7 +285,7 @@ export default function Atendimento() {
                     <Image
                       src={calendar_icon}
                       alt="calendar icon"
-                      className="w-5 h-5"
+                      className="w-5 h-5 ml-2"
                     />
                   </Button>
                 </PopoverTrigger>
@@ -340,7 +341,7 @@ export default function Atendimento() {
                   text="Nova Consulta"
                   color="#50E678"
                   image_src="/Vector.svg"
-                  onClick={() => router.push("/cadastro")}
+                  onClick={() => router.push("/Cadastro")}
                 />
               </div>
             </div>

@@ -8,6 +8,7 @@ import React from "react";
 import ModalNovaConsulta from "@/components/modalnovaconsulta";
 import Botao2 from "@/components/Botao2";
 import CardConsulta from "@/components/CardConsulta";
+import { useRouter } from "next/navigation";
 
 export default function DetalheConsulta() {
   const consultaMock = [
@@ -54,6 +55,8 @@ export default function DetalheConsulta() {
   ];
 
   const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const router = useRouter();
+
   return (
     <div className="flex flex-1 flex-col bg-[#FFFFFF] min-h-screen">
       <div className="w-full flex flex-col">
@@ -65,7 +68,10 @@ export default function DetalheConsulta() {
         <div className="w-full px-4 sm:px-8 lg:px-[165px]">
           <div className="pt-[40px] w-full">
             <div className="flex items-center">
-              <div className="w-6 h-6 sm:w-8 sm:h-8">
+              <div 
+                className="w-6 h-6 sm:w-8 sm:h-8 cursor-pointer"
+                onClick={() => router.back()}
+              >
                 <Image src={arrow} alt="Back arrow" className="w-full h-full" />
               </div>
               <div className="ml-4 font-bold text-2xl sm:text-3xl lg:text-[48px]">
@@ -139,7 +145,7 @@ export default function DetalheConsulta() {
                         color="#50E678"
                         width="100%"
                         height="48px"
-                        image_src="task_alt.svg"
+                        image_src="../task_alt.svg"
                         onClick={() => setIsModalOpen(true)}
                       />
                     </div>
