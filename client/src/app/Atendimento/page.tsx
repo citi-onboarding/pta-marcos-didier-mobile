@@ -60,8 +60,10 @@ type Consultation = {
 export default function Atendimento() {
   const router = useRouter();
 
-  const [date, setDate] = React.useState<Date | undefined>(undefined);
-  const [open, setOpen] = React.useState(false);
+  const [startDate, setStartDate] = React.useState<Date | undefined>(undefined);
+  const [endDate, setEndDate] = React.useState<Date | undefined>(undefined);
+  const [openStart, setOpenStart] = React.useState(false);
+  const [openEnd, setOpenEnd] = React.useState(false);
   const [selectedTab, setSelectedTab] = React.useState<
     "agendamento" | "historico"
   >("agendamento");
@@ -132,7 +134,7 @@ export default function Atendimento() {
       let response;
       if (!doctor) {
         response = await api.get("/consultation/cards");
-        console.log(response)
+        console.log(response);
       } else {
         const encoded = encodeURIComponent(doctor);
         response = await api.get(`/consultation/drcards/${encoded}`);
@@ -157,7 +159,7 @@ export default function Atendimento() {
   }
 
   return (
-    <div className="flex flex-1 flex-col bg-[#FFFFFF] min-h-screen">
+    <div className="flex flex-1 flex-col bg-[#FFFFFF] min-h-screen overflow-x-hidden">
       <div className="w-full flex flex-col">
         <div className="w-full">
           <NavBar />
@@ -167,7 +169,10 @@ export default function Atendimento() {
         <div className="w-full px-4 sm:px-8 lg:px-[165px] flex flex-col h-full">
           <div className="pt-[40px] w-full">
             <div className="flex items-center">
-              <div className="w-6 h-6 sm:w-8 sm:h-8 cursor-pointer" onClick={() => router.back()}>
+              <div
+                className="w-6 h-6 sm:w-8 sm:h-8 cursor-pointer"
+                onClick={() => router.back()}
+              >
                 <Image src={Arrow} alt="arrow back" className="w-full h-full" />
               </div>
               <p className="text-2xl sm:text-3xl lg:text-[48px] ml-4 font-bold">
@@ -231,15 +236,15 @@ export default function Atendimento() {
             </div>
 
             <div className="flex gap-4 mt-4 lg:mt-0">
-              <Popover open={open} onOpenChange={setOpen}>
+              <Popover open={openStart} onOpenChange={setOpenStart}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
                     id="date"
                     className="flex-1 lg:w-[126px] h-12 lg:h-[56px] justify-center font-normal transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none text-sm sm:text-base"
                   >
-                    {date
-                      ? date.toLocaleDateString("pt-BR", {
+                    {startDate
+                      ? startDate.toLocaleDateString("pt-BR", {
                           day: "2-digit",
                           month: "2-digit",
                           year: "2-digit",
@@ -258,25 +263,25 @@ export default function Atendimento() {
                 >
                   <Calendar
                     mode="single"
-                    selected={date}
+                    selected={startDate}
                     captionLayout="dropdown"
                     onSelect={(date) => {
-                      setDate(date);
-                      setOpen(false);
+                      setStartDate(date);
+                      setOpenStart(false);
                     }}
                   />
                 </PopoverContent>
               </Popover>
 
-              <Popover>
+              <Popover open={openEnd} onOpenChange={setOpenEnd}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
                     id="date-end"
                     className="flex-1 lg:w-[126px] h-12 lg:h-[56px] justify-center font-normal transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none text-sm sm:text-base"
                   >
-                    {date
-                      ? date.toLocaleDateString("pt-BR", {
+                    {endDate
+                      ? endDate.toLocaleDateString("pt-BR", {
                           day: "2-digit",
                           month: "2-digit",
                           year: "2-digit",
@@ -295,10 +300,10 @@ export default function Atendimento() {
                 >
                   <Calendar
                     mode="single"
-                    selected={date}
+                    selected={endDate}
                     captionLayout="dropdown"
                     onSelect={(date) => {
-                      setDate(date);
+                      setEndDate(date);
                     }}
                   />
                 </PopoverContent>
@@ -324,6 +329,22 @@ export default function Atendimento() {
                         ? isPastConsultation(card.date, card.time)
                         : !isPastConsultation(card.date, card.time)
                     )
+                    .filter((card) => {
+                      if (!startDate && !endDate) return true; // sem filtro
+                      const consultaDate = getConsultationDate(
+                        card.date,
+                        card.time
+                      ); // data da consulta
+                      let start = startDate ? new Date(startDate) : undefined; // copia da data inicial
+                      if (start) start.setHours(0, 0, 0, 0); // início do dia
+                      let end = endDate ? new Date(endDate) : undefined; // copia da data final
+                      if (end) end.setHours(23, 59, 59, 999); // fim do dia
+                      if (start && end)
+                        return consultaDate >= start && consultaDate <= end; // entre as datas
+                      if (start) return consultaDate >= start; // após a data inicial
+                      if (end) return consultaDate <= end; // antes da data final
+                      return true;
+                    })
                     .map((card, idx) => (
                       <Card
                         key={card.id ?? idx}
