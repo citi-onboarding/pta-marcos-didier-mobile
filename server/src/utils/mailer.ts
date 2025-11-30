@@ -16,8 +16,6 @@ const transporter = nodemailer.createTransport({
     user,
     pass,
   },
-  logger: true,
-  debug: true,
 });
 
 transporter
