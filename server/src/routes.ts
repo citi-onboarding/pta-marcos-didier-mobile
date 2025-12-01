@@ -2,8 +2,15 @@ import express from "express";
 import userController from "./controllers/UserController";
 import petController from "./controllers/PetController";
 import consultationController from "./controllers/consultationController";
+import mailController from "./controllers/mailController";
 
 const routes = express.Router();
+
+// ROTA DE ENVIO DE EMAIL
+
+routes.post("/send-email", mailController.send);
+
+// RESTO DO CÓDIGO
 
 routes.post("/user", userController.create);
 routes.get("/user", userController.get);
