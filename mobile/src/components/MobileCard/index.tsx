@@ -3,30 +3,29 @@ import { View, Text, Image } from "react-native";
 import { Alarmmobile, cat, dog, cow, horse, pig, sheep } from "../../assets";
 
 export interface PetCardmbProps {
-  type: "Primeira consulta" | "Vacinacao" | "Checkup" | "Retorno" | "Historico";
+  type: "PrimeiraConsulta" | "Vacinacao" | "CheckUp" | "Retorno";
   nomePet: string;
   nomeDono: string;
   nomeDr: string;
   data: string;
   horario: string;
-  tipoPet: "cat" | "dog" | "sheep" | "cow" | "horse" | "pig";
+  tipoPet: "Gato" | "Cachorro" | "Bode" | "Girafa" | "Cavalo" | "Porco";
 }
 
 const corPorConsulta = {
-  "Primeira consulta": "#BFB5FF",
+  PrimeiraConsulta: "#BFB5FF",
   Vacinacao: "#AAE1FF",
-  Checkup: "#9CFF95",
+  CheckUp: "#9CFF95",
   Retorno: "#FF641999",
-  Historico: "#F0F0F0",
 };
 
 const imgsporpet: Record<PetCardmbProps["tipoPet"], any> = {
-  cat,
-  dog,
-  sheep,
-  cow,
-  horse,
-  pig,
+  Gato: cat,
+  Cachorro: dog,
+  Bode: sheep,
+  Girafa: cow,
+  Cavalo: horse,
+  Porco: pig,
 };
 
 export default function PetCard(props: PetCardmbProps) {
