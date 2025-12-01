@@ -13,11 +13,20 @@ class MailController {
         return res.status(400).json({ error: "Email é obrigatório" });
       }
 
+      const data_atual = new Date().toLocaleString("pt-BR", {
+        timeZone: "America/Sao_Paulo",
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      });
       const subject = "Comprovante da consulta";
       const html = `
         <h1>Comprovante de Cadastro</h1>
         <p>Seu cadastro foi concluído com sucesso!</p>
-        <p>Data: ${new Date().toLocaleString("pt-BR")}</p>
+        <p>Data: ${data_atual}</p>
       `;
 
       const result = await sendMail(email, subject, html);
