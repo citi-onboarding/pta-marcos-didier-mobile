@@ -49,8 +49,10 @@ export default function Cadastro(){
             //3 - POST para criar o PET
             const petResponse = await axios.post('http://localhost:3001/pet', petBody);
 
+            console.log("Resposta da criação do pet:", petResponse.data);
+
             //4 - pegar o id gerado
-            const createdPetId = petResponse.data.id;
+            const createdPetId = petResponse.data.createdPet.id
 
             if(!createdPetId){
                 throw new Error("ID do pet criado não retornado.");
