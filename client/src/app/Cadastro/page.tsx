@@ -8,6 +8,8 @@ import dog from "@/assets/dog.png";
 import NavBar from "@/components/Navbar";
 import ModalCadastro from "@/components/modalcadastro";
 import { useState } from "react";
+import axios from "axios";
+
 
 export default function Cadastro(){
 
@@ -15,8 +17,67 @@ export default function Cadastro(){
     const [modalAberto, setModalAberto] = useState(false);
     const router = useRouter();
 
-    const submitForm = (data: any) => {
-        console.log("Dados do formulário: ", data);
+    const speciesMap: Record<string, string> = {
+        "sheep": "Bode",
+        "cat": "Gato",
+        "pig": "Porco",
+        "cow": "Bode",   //schema não tem 'Vaca'. Mapeado para 'Bode' pra não quebrar.
+        "horse": "Cavalo",
+        "dog": "Cachorro"
+    };
+
+    const submitForm = async (data: any) => {
+
+        try{
+            //1 - traducao da especie
+            const speciesEnum = speciesMap[data.especiePaciente];
+
+            if(!speciesEnum){
+                alert("Espécie inválida selecionada.");
+                return;
+            }
+
+            //2 - montar objeto do paciente (PET)
+            const petBody = {
+                nomeDoAnimal: data["Nome do Paciente"],
+                nomeDono: data["Nome do tutor"],
+                especie: speciesEnum,
+                idade: Number(data["Idade do paciente"]),
+                genero: "Macho" //Gênero não está sendo coletado no formulário
+            }
+
+            //3 - POST para criar o PET
+            const petResponse = await axios.post('http://localhost:3001/pet', petBody);
+
+            console.log("Resposta da criação do pet:", petResponse.data);
+
+            //4 - pegar o id gerado
+            const createdPetId = petResponse.data.createdPet.id
+
+            if(!createdPetId){
+                throw new Error("ID do pet criado não retornado.");
+            }
+
+            //5 - montar objeto da consulta
+            const consultationBody = {
+                medico: data["Médico Responsável"],
+                descricao: data["Descrição do problema"],
+                tipo: data["Tipo de consulta"],
+                data: data["Data do atendimento"],
+                hora: data["Horário do atendimento"],
+                idPaciente: createdPetId
+            }
+
+            //6 - POST para criar consulta
+            await axios.post('http://localhost:3001/consultation', consultationBody);
+
+            setModalAberto(true)
+
+        }catch(error){
+            console.error("Erro no cadastro:", error);
+            alert("Erro ao realizar o cadastro. Verifique o console.");
+        }
+        
         setModalAberto(true);
     }
 
@@ -28,20 +89,13 @@ export default function Cadastro(){
         router.back();
     };
 
-    const MockedMedicosCadastrados = [
-        "Marcos Didier",
-        "Ana Silva",
-        "João Pereira",
-        "Maria Oliveira"
+    const MockedTiposDeConsulta = [
+        "PrimeiraConsulta",
+        "Retorno",
+        "CheckUp",
+        "Vacinacao"
     ]
 
-    const MockedTiposDeConsulta = [
-        "Consulta de rotina",
-        "Vacinação",
-        "Emergência",
-        "Exame laboratoriais"
-    ]
-    
     const MockedSpecies = [
         "sheep",
         "cat",
@@ -51,6 +105,7 @@ export default function Cadastro(){
         "dog"
     ]
 
+    
     const MockedSpeciesImages: any = {
         sheep: sheep,
         cat: cat,
@@ -168,18 +223,11 @@ export default function Cadastro(){
                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full">
                                 <div className="flex flex-col gap-2">
                                     <span className="font-bold text-gray-900 text-base sm:text-lg">Médico responsável</span>
-                                    <select
-                                        {...register("Médico Responsável", { required: true })}
-                                        defaultValue=""
-                                        className="border border-gray-400 rounded-lg px-4 py-3 w-full text-gray-700 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-colors bg-white text-base sm:text-lg"
-                                    >
-                                        <option value="" disabled>Selecione...</option>
-                                        {MockedMedicosCadastrados.map((medico) => (
-                                            <option key={medico} value={medico}>
-                                                {medico}
-                                            </option>
-                                        ))}
-                                    </select>
+                                    <input
+                                        {...register("Médico Responsável", {required: true})}
+                                        placeholder="Digite aqui o nome do médico"
+                                        className="border border-gray-400 rounded-lg px-4 py-3 w-full placeholder:text-gray-300 text-gray-700 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-colors text-base sm:text-lg"
+                                    />
                                 </div>
                                 <div className="flex flex-col gap-2">
                                     <span className="font-bold text-gray-900 text-base sm:text-lg">Data do atendimento</span>

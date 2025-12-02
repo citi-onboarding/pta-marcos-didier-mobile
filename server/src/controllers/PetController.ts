@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { Citi, Crud } from "../global";
+import petRepository from "../repository/pet";
 
 /**
  genero String
@@ -32,9 +33,13 @@ class PetController implements Crud {
 
             const newPet = {genero, idade, especie, nomeDono, nomeDoAnimal};
 
-            const {httpStatus, message} = await this.citi.insertIntoDatabase(newPet);
+            const petRep = new petRepository();
 
-            return response.status(httpStatus).send({message});
+            const {httpStatus, message, createdPet} = await petRep.insertNewPetIntoDatabase(newPet);
+
+            //const {httpStatus, message, createdPet} = await this.citi.insertIntoDatabase(newPet);
+
+            return response.status(httpStatus).send({message, createdPet});
 
         }catch(error){
             return response.status(500).send({message: "Internal server error"});
