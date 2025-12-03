@@ -21,7 +21,7 @@ export default function ModalCadastro(props: modalprops) {
     try {
       console.log("Enviando email para:", data.email);
 
-      const response = await axios.post("http://localhost:3001/send-email", {
+      const response = await axios.post("https://pta-marcos-didier-mobile.onrender.com/send-email", {
         email: data.email,
       });
 
