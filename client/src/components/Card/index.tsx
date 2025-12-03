@@ -71,7 +71,7 @@ export default function Card(props: CardProps) {
           <span className="font-bold text-[12px] sm:text-[14px]">{patientName} </span>
           <span className="text-[12px] sm:text-[14px]">/ {ownerName}</span>
         </div>
-        <div className="text-[12px] sm:text-[14px] text-center sm:text-left">{doctorName}</div>
+        <div className="text-[12px] sm:text-[14px] text-center sm:text-left">Dr {doctorName}</div>
       </div>
 
       <div className={`w-[101px] h-[103px] rounded-[8px] relative flex-shrink-0`}>
