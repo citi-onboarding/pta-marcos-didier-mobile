@@ -9,6 +9,7 @@ import NavBar from "@/components/Navbar";
 import ModalCadastro from "@/components/modalcadastro";
 import { useState } from "react";
 import axios from "axios";
+import api from "@/services/api";
 
 
 export default function Cadastro(){
@@ -47,7 +48,7 @@ export default function Cadastro(){
             }
 
             //3 - POST para criar o PET
-            const petResponse = await axios.post('http://localhost:3001/pet', petBody);
+            const petResponse = await api.post('/pet', petBody);
 
             console.log("Resposta da criação do pet:", petResponse.data);
 
@@ -69,7 +70,7 @@ export default function Cadastro(){
             }
 
             //6 - POST para criar consulta
-            await axios.post('http://localhost:3001/consultation', consultationBody);
+            await api.post('consultation', consultationBody);
 
             setModalAberto(true)
 
