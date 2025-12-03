@@ -98,12 +98,12 @@ export default function DetalheConsulta() {
                 const [diaB, mesB] = b.date.split('/');
                 const dataB = new Date(`${anoAtual}-${mesB}-${diaB}T${b.time}`);
 
-                //ordem decrsescente (mais recente primeiro)
-                return dataB.getTime() - dataA.getTime();
-              })
-          : [];
+          // Ordem decrescente (mais recente primeiro)
+          return dataB.getTime() - dataA.getTime();
+        })
+        : [];
 
-        console.log("Histórico Processado:", mappedHistory);
+          {console.log(data.historico)}
 
         setConsultaDetails(mappedDetails);
         setHistory(mappedHistory);
