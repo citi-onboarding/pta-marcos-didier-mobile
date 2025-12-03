@@ -18,12 +18,22 @@ import horse from "@/assets/horse.svg";
 import pig from "@/assets/pig.svg";
 import cow from "@/assets/cow.svg";
 
+
+interface MappedHistoryItem {
+  id: string;
+  date: string;
+  time: string;
+  type_appointment: string;
+  doctorName: string;
+}
+
 export default function DetalheConsulta() {
   const [loading, setLoading] = React.useState(false);
   const [consultaDetails, setConsultaDetails] = useState<any | null>(null);
-  const [history, setHistory] = useState<any[]>([]);
+
+  const [history, setHistory] = useState<MappedHistoryItem[]>([]);
   const params = useParams() as { ID?: string; id?: string };
-  const id = params.ID ?? params.id; // isso pega o id da pagina
+  const id = params.ID ?? params.id; 
 
   const typemap: Record<string, string> = {
     Retorno: "Retorno",
@@ -54,26 +64,53 @@ export default function DetalheConsulta() {
         setLoading(true);
         const response = await api.get(`/consultation/details/${id}`);
         const data = response.data;
+        
         const mappedDetails = {
           petName: data.paciente.nomeDoAnimal,
           petAge: data.paciente.idade,
           ownerName: data.paciente.nomeDono,
-          petSpecies: data.paciente.especie, // <-- precisa ter isso
+          petSpecies: data.paciente.especie,
           doctorName: data.consulta.medico,
           problemDescription: data.consulta.descricao,
           consultationType: data.consulta.tipo,
           petId: data.consulta.idPaciente,
         };
 
-        const mappedHistory = Array.isArray(data.historico)
-          ? data.historico.map((item: any) => ({
-              id: item.id,
-              date: item.data,
-              time: item.hora,
-              type_appointment: item.tipo,
-              doctorName: item.medico,
-            }))
-          : [id];
+        const mappedHistory: MappedHistoryItem[] = Array.isArray(data.historico)
+          ? data.historico
+              .map((item: any): MappedHistoryItem => ({
+                id: item.id || Math.random().toString(),
+                date: item.data, // Ex: "05/12"
+                time: item.hora, // Ex: "17:00"
+                type_appointment: item.tipo,
+                doctorName: item.medico,
+              }))
+              .filter((item: MappedHistoryItem) => {
+                //monta a data completa usando o Ano Atual
+                const [dia, mes] = item.date.split('/');
+                const anoAtual = new Date().getFullYear();
+                
+                //formato ISO: YYYY-MM-DDTHH:mm
+                const dataCompleta = new Date(`${anoAtual}-${mes}-${dia}T${item.time}`);
+                
+                //true se for passado
+                return dataCompleta < new Date();
+              })
+              .sort((a: MappedHistoryItem, b: MappedHistoryItem) => {
+                const anoAtual = new Date().getFullYear();
+
+                const [diaA, mesA] = a.date.split('/');
+                const dataA = new Date(`${anoAtual}-${mesA}-${diaA}T${a.time}`);
+
+                const [diaB, mesB] = b.date.split('/');
+                const dataB = new Date(`${anoAtual}-${mesB}-${diaB}T${b.time}`);
+
+          // Ordem decrescente (mais recente primeiro)
+          return dataB.getTime() - dataA.getTime();
+        })
+        : [];
+
+          {console.log(data.historico)}
 
         setConsultaDetails(mappedDetails);
         setHistory(mappedHistory);
@@ -83,7 +120,10 @@ export default function DetalheConsulta() {
         setLoading(false);
       }
     }
-    fetchConsultaDetails();
+    
+    if (id) {
+        fetchConsultaDetails();
+    }
   }, [id]);
 
   const [isModalOpen, setIsModalOpen] = React.useState(false);
@@ -123,9 +163,10 @@ export default function DetalheConsulta() {
 
                 <div className="flex flex-col sm:flex-row items-center sm:items-start mt-6 sm:mt-8 gap-4 sm:gap-6">
                   <div className="w-48 h-48 sm:w-56 sm:h-56 lg:w-[295px] lg:h-[299px] flex-shrink-0">
+                    {/*verificacao segura da imagem*/}
                     <Image
-                      src={imgsporpet[consultaDetails?.petSpecies]}
-                      alt={consultaDetails?.petSpecies}
+                      src={imgsporpet[consultaDetails?.petSpecies] || cat} 
+                      alt={consultaDetails?.petSpecies || "Pet"}
                       width={295}
                       height={299}
                       className="w-full h-full object-cover rounded-lg"
@@ -208,9 +249,15 @@ export default function DetalheConsulta() {
                 </div>
 
                 <div className="grid grid-cols-1 gap-y-4 sm:gap-y-6 w-full mt-6 rounded-[24px] border border-dashed border-gray-300 justify-items-center pt-6 pb-6 min-h-[300px]">
-                  {history.slice(0, 4).map((card, idx) => (
-                    <CardConsulta key={idx} {...card} />
-                  ))}
+                  {history.length > 0 ? (
+                    history.slice(0, 4).map((card, idx) => (
+                      <CardConsulta key={card.id || idx} {...card} />
+                    ))
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-gray-400">
+                      Nenhum histórico recente.
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -218,7 +265,7 @@ export default function DetalheConsulta() {
         </div>
       </div>
 
-      {isModalOpen && (
+      {isModalOpen && consultaDetails && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <ModalNovaConsulta
             onClose={() => setIsModalOpen(false)}
