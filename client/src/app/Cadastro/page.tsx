@@ -80,7 +80,9 @@ export default function Cadastro() {
       const consultationBody = {
         medico: data["Médico Responsável"],
         descricao: data["Descrição do problema"],
-        tipo: data["Tipo de consulta"],
+        tipo: MockedTiposDeConsulta.find(
+          (tipo) => tipo.label === data["Tipo de consulta"]
+        )?.value, // Mapeia o valor exibido para o valor esperado pela API
         data: formattedDate,
         hora: data["Horário do atendimento"],
         idPaciente: createdPetId,
@@ -107,10 +109,10 @@ export default function Cadastro() {
   };
 
   const MockedTiposDeConsulta = [
-    "PrimeiraConsulta",
-    "Retorno",
-    "CheckUp",
-    "Vacinacao",
+    { label: "Primeira Consulta", value: "PrimeiraConsulta" },
+    { label: "Check-up", value: "CheckUp" },
+    { label: "Vacinação", value: "Vacinacao" },
+    { label: "Retorno", value: "Retorno" },
   ];
 
   const MockedSpecies = ["sheep", "cat", "pig", "cow", "horse", "dog"];
@@ -253,8 +255,8 @@ export default function Cadastro() {
                       Selecione...
                     </option>
                     {MockedTiposDeConsulta.map((tipo) => (
-                      <option key={tipo} value={tipo}>
-                        {tipo}
+                      <option key={tipo.value} value={tipo.label}>
+                        {tipo.label}
                       </option>
                     ))}
                   </select>
