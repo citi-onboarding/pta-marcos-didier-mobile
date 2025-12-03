@@ -55,10 +55,12 @@ export default function DetalheConsulta() {
           doctorName: data.consulta.medico,
           problemDescription: data.consulta.descricao,
           consultationType: data.consulta.tipo,
+          petId: data.consulta.idPaciente,
         };
 
         const mappedHistory = Array.isArray(data.historico)
           ? data.historico.map((item: any) => ({
+              id: item.id,
               date: item.data,
               time: item.hora,
               type_appointment: item.tipo,
@@ -211,7 +213,11 @@ export default function DetalheConsulta() {
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <ModalNovaConsulta onClose={() => setIsModalOpen(false)} />
+          <ModalNovaConsulta
+            onClose={() => setIsModalOpen(false)}
+            idPaciente={consultaDetails.petId}
+            descricao={consultaDetails.problemDescription}
+          />
         </div>
       )}
     </div>

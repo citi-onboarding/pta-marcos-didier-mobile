@@ -58,6 +58,7 @@ export class consultationRepository {
         // a variavel consulta guarda os dados da consulta e do paciente (com id pra usar dps)
         where: { id: Number(consultationId) },
         select: {
+          id: true,
           medico: true,
           descricao: true,
           tipo: true,
@@ -90,9 +91,11 @@ export class consultationRepository {
         // return formatado
         paciente: consulta.paciente,
         consulta: {
+          id: consulta.id,
           medico: consulta.medico,
           descricao: consulta.descricao,
           tipo: consulta.tipo,
+          idPaciente: consulta.idPaciente,
         },
         historico,
       };
