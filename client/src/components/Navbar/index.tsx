@@ -1,5 +1,6 @@
 "use client";
 
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { citipetlogo } from "@/assets";
 import { button_groups } from "@/assets";
 import { useState, useEffect } from "react";
@@ -46,35 +47,46 @@ export default function NavBar() {
         />
       </div>
 
-      {/* Desktop Menu */}
-      <div className="hidden md:flex space-x-8">
-        <div className="space-y-1 flex flex-col items-center">
-          <button
-            onClick={handleAtendimentoClick}
-            className="p-2 hover:bg-lime-300 hover:rounded-full transition-all duration-300 ease-in-out"
-          >
-            Atendimento
-          </button>
-          <div
-            className={`h-[2px] bg-green-500 transition-all duration-300 ease-in-out ${
-              buttonSelected === "atendimento" ? "w-full" : "w-0"
-            }`}
-          ></div>
-        </div>
-        <div className="space-y-1 flex flex-col items-center">
-          <button
-            onClick={handleCadastroClick}
-            className="p-2 hover:bg-lime-300 hover:rounded-full transition-all duration-300 ease-in-out"
-          >
-            Cadastro
-          </button>
-          <div
-            className={`h-[2px] bg-green-500 transition-all duration-300 ease-in-out ${
-              buttonSelected === "cadastro" ? "w-full" : "w-0"
-            }`}
-          ></div>
-        </div>
-      </div>
+      {/* Desktop Menu (converted to Tabs, preserving styles) */}
+      <Tabs
+        value={buttonSelected}
+        onValueChange={(v) => {
+          setButtonSelected(v);
+          if (v === "cadastro") router.push("/Cadastro");
+          else router.push("/Atendimento");
+          setMobileMenuOpen(false);
+        }}
+      >
+        <TabsList className="hidden md:flex space-x-8">
+          <div className="space-y-1 flex flex-col items-center">
+            <TabsTrigger
+              value="atendimento"
+              className="p-2 hover:bg-lime-300 hover:rounded-full transition-all duration-300 ease-in-out"
+            >
+              Atendimento
+            </TabsTrigger>
+            <div
+              className={`h-[2px] bg-green-500 transition-all duration-300 ease-in-out ${
+                buttonSelected === "atendimento" ? "w-full" : "w-0"
+              }`}
+            ></div>
+          </div>
+
+          <div className="space-y-1 flex flex-col items-center">
+            <TabsTrigger
+              value="cadastro"
+              className="p-2 hover:bg-lime-300 hover:rounded-full transition-all duration-300 ease-in-out"
+            >
+              Cadastro
+            </TabsTrigger>
+            <div
+              className={`h-[2px] bg-green-500 transition-all duration-300 ease-in-out ${
+                buttonSelected === "cadastro" ? "w-full" : "w-0"
+              }`}
+            ></div>
+          </div>
+        </TabsList>
+      </Tabs>
 
       {/* Mobile Menu Button */}
       <div className="md:hidden">
@@ -111,26 +123,38 @@ export default function NavBar() {
       {mobileMenuOpen && (
         <div className="absolute top-[70px] left-0 right-0 bg-white border-t border-gray-200 md:hidden z-50">
           <div className="px-4 py-2 space-y-2">
-            <button
-              onClick={handleAtendimentoClick}
-              className={`block w-full text-left p-3 rounded-md transition-colors ${
-                buttonSelected === "atendimento"
-                  ? "bg-green-100 text-green-700"
-                  : "hover:bg-gray-100"
-              }`}
+            <Tabs
+              value={buttonSelected}
+              onValueChange={(v) => {
+                setButtonSelected(v);
+                if (v === "cadastro") router.push("/Cadastro");
+                else router.push("/Atendimento");
+                setMobileMenuOpen(false);
+              }}
             >
-              Atendimento
-            </button>
-            <button
-              onClick={handleCadastroClick}
-              className={`block w-full text-left p-3 rounded-md transition-colors ${
-                buttonSelected === "cadastro"
-                  ? "bg-green-100 text-green-700"
-                  : "hover:bg-gray-100"
-              }`}
-            >
-              Cadastro
-            </button>
+              <TabsList className="flex flex-col">
+                <TabsTrigger
+                  value="atendimento"
+                  className={`block w-full text-left p-3 rounded-md transition-colors ${
+                    buttonSelected === "atendimento"
+                      ? "bg-green-100 text-green-700"
+                      : "hover:bg-gray-100"
+                  }`}
+                >
+                  Atendimento
+                </TabsTrigger>
+                <TabsTrigger
+                  value="cadastro"
+                  className={`block w-full text-left p-3 rounded-md transition-colors ${
+                    buttonSelected === "cadastro"
+                      ? "bg-green-100 text-green-700"
+                      : "hover:bg-gray-100"
+                  }`}
+                >
+                  Cadastro
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
           </div>
         </div>
       )}

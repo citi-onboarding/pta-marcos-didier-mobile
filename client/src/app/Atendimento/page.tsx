@@ -211,7 +211,7 @@ export default function Atendimento() {
           </div>
 
           <div className="w-full mt-8 lg:mt-[40px] bg-[#FFFFFF] flex flex-col lg:flex-row lg:justify-between">
-            <div className="w-full lg:w-auto bg-[#F0F0F0] rounded-lg p-2 flex">
+            <div className="w-full lg:w-auto bg-[#F0F0F0] rounded-lg p-2 flex justify-center items-center gap-2">
               <button
                 onClick={() => setSelectedTab("agendamento")}
                 className={`flex-1 lg:w-[159px] h-12 lg:h-[49px] rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none text-sm sm:text-base font-medium ${
@@ -225,7 +225,7 @@ export default function Atendimento() {
 
               <button
                 onClick={() => setSelectedTab("historico")}
-                className={`flex-1 lg:w-[92px] h-12 lg:h-[42px] rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none text-sm sm:text-base font-medium flex items-center justify-center ${
+                className={`flex-1 lg:w-[92px] h-12 lg:h-[49px] rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none text-sm sm:text-base font-medium flex items-center justify-center ${
                   selectedTab === "historico"
                     ? "bg-[#FFFFFF] shadow-sm"
                     : "bg-[#F0F0F0]"
