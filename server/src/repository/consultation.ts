@@ -80,6 +80,7 @@ export class consultationRepository {
         // igual a funcao de cima que pegava so o historico
         where: { idPaciente: Number(consulta.idPaciente) },
         select: {
+          id: true,
           data: true,
           hora: true,
           medico: true,
