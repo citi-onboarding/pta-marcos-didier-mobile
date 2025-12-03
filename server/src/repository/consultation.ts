@@ -37,6 +37,7 @@ export class consultationRepository {
           idPaciente: Number(petid),
         },
         select: {
+          id: true,
           data: true,
           hora: true,
           medico: true,
@@ -80,6 +81,7 @@ export class consultationRepository {
         // igual a funcao de cima que pegava so o historico
         where: { idPaciente: Number(consulta.idPaciente) },
         select: {
+          id: true,
           data: true,
           hora: true,
           medico: true,

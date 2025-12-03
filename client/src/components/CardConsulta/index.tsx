@@ -1,10 +1,12 @@
 "use client";
 import React from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import alarm from "@/assets/alarm.svg";
 import arrow_front from "@/assets/arrow_front.svg";
 
 interface CardProps {
+  id: number | string;
   date: string;
   time: string;
   type_appointment: string;
@@ -12,11 +14,15 @@ interface CardProps {
 }
 
 export default function CardConsulta(props: CardProps) {
-  const { date, time, type_appointment, doctorName } = props;
+  const { id, date, time, type_appointment, doctorName } = props;
+  const router = useRouter();
 
   return (
     <div
-      className={`w-full max-w-[510px] sm:max-w-[400px] xs:max-w-[320px] h-[82px] sm:h-[72px] xs:h-[64px] bg-[#F0F0F0] rounded-[16px] flex items-center gap-4 sm:gap-3 px-4`}
+      onClick={() => router.push(`/DetalheConsulta/${id}`)}
+      role="button"
+      tabIndex={0}
+      className={`cursor-pointer w-full max-w-[510px] sm:max-w-[400px] xs:max-w-[320px] h-[82px] sm:h-[72px] xs:h-[64px] bg-[#F0F0F0] rounded-[16px] flex items-center gap-4 sm:gap-3 px-4`}
     >
       <div className="w-12 sm:w-10 xs:w-8 h-12 sm:h-10 xs:h-8 bg-[#FFFFFFCC] rounded-[4px] flex flex-col justify-center items-center">
         <div className="font-bold text-[14px] sm:text-[13px] xs:text-[12px]">
