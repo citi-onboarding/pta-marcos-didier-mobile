@@ -29,8 +29,8 @@ CREATE TABLE "Paciente" (
     "genero" TEXT NOT NULL,
     "idade" INTEGER NOT NULL,
     "especie" "Especies" NOT NULL,
-    "nomedono" TEXT NOT NULL,
-    "nomedoanimal" TEXT NOT NULL,
+    "nomeDono" TEXT NOT NULL,
+    "nomeDoAnimal" TEXT NOT NULL,
 
     CONSTRAINT "Paciente_pkey" PRIMARY KEY ("id")
 );
@@ -41,11 +41,12 @@ CREATE TABLE "Consulta" (
     "medico" TEXT NOT NULL,
     "descricao" TEXT NOT NULL,
     "tipo" "TipoConsulta" NOT NULL,
-    "dataehora" TIMESTAMP(3) NOT NULL,
-    "idpaciente" INTEGER NOT NULL,
+    "data" TEXT NOT NULL,
+    "hora" TEXT NOT NULL,
+    "idPaciente" INTEGER NOT NULL,
 
     CONSTRAINT "Consulta_pkey" PRIMARY KEY ("id")
 );
 
 -- AddForeignKey
-ALTER TABLE "Consulta" ADD CONSTRAINT "Consulta_idpaciente_fkey" FOREIGN KEY ("idpaciente") REFERENCES "Paciente"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Consulta" ADD CONSTRAINT "Consulta_idPaciente_fkey" FOREIGN KEY ("idPaciente") REFERENCES "Paciente"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

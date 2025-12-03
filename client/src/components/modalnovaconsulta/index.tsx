@@ -3,12 +3,19 @@ import { btfechar, citipetlogo } from "@/assets";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
+import api from "@/services/api";
 
 type ModalNovaConsultaProps = {
   onClose: () => void;
+  idPaciente: number | string;
+  descricao: string;
 };
 
-export default function ModalNovaConsulta({ onClose }: ModalNovaConsultaProps) {
+export default function ModalNovaConsulta({
+  onClose,
+  idPaciente,
+  descricao,
+}: ModalNovaConsultaProps) {
   type FormData = {
     tipodeconsulta: string;
     data: string;
@@ -22,13 +29,63 @@ export default function ModalNovaConsulta({ onClose }: ModalNovaConsultaProps) {
     formState: { errors },
   } = useForm<FormData>();
 
-  function onSubmit(data: FormData) {
-    console.log(data);
-    onClose();
-  }
+  function onSubmit(data: FormData) {}
 
   const [dateType, setDateType] = useState<"text" | "date">("text");
   const [timeType, settimeType] = useState<"text" | "time">("text");
+  const [submitting, setSubmitting] = useState(false);
+
+  async function asyncSubmit(formData: FormData) {
+    if (!idPaciente) {
+      console.error("idPaciente não fornecido");
+      return;
+    }
+
+    // normalize date to DD/MM
+    let formattedDate = formData.data || "";
+    // if input is in YYYY-MM-DD (type=date) convert to DD/MM
+    const isoMatch = formattedDate.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (isoMatch) {
+      const [, year, month, day] = isoMatch;
+      formattedDate = `${day}/${month}`;
+    } else {
+      // if user typed something like DD/MM/YYYY or DD/MM, extract DD/MM
+      const dmMatch = formattedDate.match(/(\d{2})\/(\d{2})/);
+      if (dmMatch) formattedDate = `${dmMatch[1]}/${dmMatch[2]}`;
+    }
+
+    const payload = {
+      medico: formData.medico,
+      descricao: descricao,
+      tipo: formData.tipodeconsulta,
+      data: formattedDate,
+      hora: formData.horario,
+      idPaciente: Number(idPaciente),
+    };
+
+    try {
+      setSubmitting(true);
+      console.log("Payload para POST /consultation:", payload);
+      const res = await api.post("/consultation", payload);
+      // You can handle success feedback here (toast, etc.)
+      onClose();
+    } catch (error) {
+      // Log more details from Axios error if available
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const err: any = error;
+      console.error("Erro ao criar consulta:", err);
+      if (err?.response) {
+        console.error(
+          "Resposta do servidor:",
+          err.response.status,
+          err.response.data
+        );
+      }
+      // Optionally show error feedback to user
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
@@ -54,14 +111,16 @@ export default function ModalNovaConsulta({ onClose }: ModalNovaConsultaProps) {
 
         <div className="flex gap-1 flex-col items-center mt-[20px] font-sf text-[14px] sm:text-[16px] px-4">
           <div className="flex gap-1 flex-wrap justify-center text-center">
-            <div className="font-bold">O pet já está cadastrado no sistema!</div>
+            <div className="font-bold">
+              O pet já está cadastrado no sistema!
+            </div>
             <div>Preencha os dados da</div>
             <div className="font-bold">consulta</div>
           </div>
         </div>
 
         <form
-          onSubmit={handleSubmit(onSubmit)}
+          onSubmit={handleSubmit(asyncSubmit)}
           className="flex flex-col mt-[29px] px-4 sm:px-8 text-[14px] sm:text-[16px] font-sf pb-8"
         >
           <div className="flex flex-col lg:flex-row gap-4">
@@ -75,10 +134,10 @@ export default function ModalNovaConsulta({ onClose }: ModalNovaConsultaProps) {
                 <option value="" disabled>
                   Selecione aqui
                 </option>
-                <option value="primeira">Primeira Consulta</option>
-                <option value="vacinacao">Vacinação</option>
-                <option value="retorno">Retorno</option>
-                <option value="checkup">Check-up</option>
+                <option value="PrimeiraConsulta">Primeira Consulta</option>
+                <option value="Vacinacao">Vacinação</option>
+                <option value="Retorno">Retorno</option>
+                <option value="CheckUp">Check-up</option>
               </select>
               {errors.tipodeconsulta && (
                 <p className="text-red-500 text-sm mt-1">Campo obrigatório</p>
@@ -131,9 +190,12 @@ export default function ModalNovaConsulta({ onClose }: ModalNovaConsultaProps) {
 
           <button
             type="submit"
-            className="mt-[30px] w-full h-[42px] bg-[#50E678] rounded-3xl flex items-center justify-center shadow-[0px_4px_4px_rgba(0,0,0,0.10)] text-white font-sf text-[14px] sm:text-[16px]"
+            disabled={submitting}
+            className={`mt-[30px] w-full h-[42px] ${
+              submitting ? "bg-green-300" : "bg-[#50E678]"
+            } rounded-3xl flex items-center justify-center shadow-[0px_4px_4px_rgba(0,0,0,0.10)] text-white font-sf text-[14px] sm:text-[16px]`}
           >
-            Finalizar cadastro
+            {submitting ? "Enviando..." : "Finalizar cadastro"}
           </button>
         </form>
       </div>

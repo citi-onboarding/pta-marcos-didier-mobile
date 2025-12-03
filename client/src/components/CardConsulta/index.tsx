@@ -5,14 +5,14 @@ import alarm from "@/assets/alarm.svg";
 import arrow_front from "@/assets/arrow_front.svg";
 
 interface CardProps {
-  data: string;
+  date: string;
   time: string;
   type_appointment: string;
   doctorName: string;
 }
 
 export default function CardConsulta(props: CardProps) {
-  const { data, time, type_appointment, doctorName } = props;
+  const { date, time, type_appointment, doctorName } = props;
 
   return (
     <div
@@ -20,7 +20,7 @@ export default function CardConsulta(props: CardProps) {
     >
       <div className="w-12 sm:w-10 xs:w-8 h-12 sm:h-10 xs:h-8 bg-[#FFFFFFCC] rounded-[4px] flex flex-col justify-center items-center">
         <div className="font-bold text-[14px] sm:text-[13px] xs:text-[12px]">
-          {data}
+          {date}
         </div>
         <div className="font-bold text-[14px] sm:text-[13px] xs:text-[12px]">
           {time}

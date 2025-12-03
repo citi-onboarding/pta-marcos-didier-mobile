@@ -1,7 +1,9 @@
 "use client";
 import { btfechar, citipetlogo } from "@/assets";
 import Image from "next/image";
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
+import { useState } from "react";
+import axios from "axios";
 
 export interface modalprops {
   abrirModal: (openclose: boolean) => void;
@@ -9,10 +11,32 @@ export interface modalprops {
 
 export default function ModalCadastro(props: modalprops) {
   const { register, handleSubmit } = useForm<{ email: string }>();
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<string>("");
 
-  function onSubmit(data: { email: string }) {
-    console.log("Email enviado:", data.email);
-    props.abrirModal(false);
+  async function onSubmit(data: { email: string }) {
+    setLoading(true);
+    setMessage("");
+
+    try {
+      console.log("Enviando email para:", data.email);
+
+      const response = await axios.post("https://pta-marcos-didier-mobile.onrender.com/send-email", {
+        email: data.email,
+      });
+
+      console.log("Email enviado com sucesso:", response.data);
+      setMessage("✅ Email enviado com sucesso!");
+
+      setTimeout(() => {
+        props.abrirModal(false);
+      }, 2000);
+    } catch (error) {
+      console.error("Erro ao enviar email:", error);
+      setMessage("❌ Erro ao enviar email. Tente novamente.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -59,13 +83,26 @@ export default function ModalCadastro(props: modalprops) {
           {...register("email", { required: true })}
           className="mt-[12px] h-[50px] border border-gray-300 px-3 rounded-lg"
           placeholder="Digite aqui..."
+          disabled={loading}
         />
+
+        {/* Mensagem de status */}
+        {message && (
+          <div
+            className={`mt-3 text-sm text-center ${
+              message.includes("sucesso") ? "text-green-600" : "text-red-600"
+            }`}
+          >
+            {message}
+          </div>
+        )}
 
         <button
           type="submit"
-          className="mt-[30px] w-full h-[42px] bg-[#50E678] rounded-3xl flex items-center justify-center shadow-[0px_4px_4px_rgba(0,0,0,0.10)] text-white font-sf text-[14px] sm:text-[16px]"
+          disabled={loading}
+          className="mt-[30px] w-full h-[42px] bg-[#50E678] rounded-3xl flex items-center justify-center shadow-[0px_4px_4px_rgba(0,0,0,0.10)] text-white font-sf text-[14px] sm:text-[16px] disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Enviar
+          {loading ? "Enviando..." : "Enviar"}
         </button>
       </form>
     </div>

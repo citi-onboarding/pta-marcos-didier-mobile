@@ -3,61 +3,52 @@ import PetCard from "../src/components/MobileCard";
 import Citigpt from "../src/assets/citigpt.svg";
 import { ScrollView } from "react-native-gesture-handler";
 import { Pressable } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Sun from "../src/assets/sunsvg.svg";
 import Cloud from "../src/assets/cloudsvg.svg";
 import Moon from "../src/assets/moonsvg.svg";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { api } from "../src/services/api";
 
-const cardsMock = [
-  {
-    type: "Retorno",
-    nomePet: "Sara",
-    nomeDono: "Vico Mac",
-    nomeDr: "Marcelo",
-    data: "20/11",
-    horario: "11:00",
-    tipoPet: "cat",
-  },
-  {
-    type: "Primeira consulta",
-    nomePet: "Rex",
-    nomeDono: "Ana Paula",
-    nomeDr: "João",
-    data: "20/11",
-    horario: "12:30",
-    tipoPet: "dog",
-  },
-  {
-    type: "Vacinacao",
-    nomePet: "Bela",
-    nomeDono: "Carlos",
-    nomeDr: "Mariana",
-    data: "20/11",
-    horario: "14:00",
-    tipoPet: "sheep",
-  },
-  {
-    type: "Checkup",
-    nomePet: "Estrela",
-    nomeDono: "Luisa",
-    nomeDr: "Pedro",
-    data: "20/11",
-    horario: "15:30",
-    tipoPet: "horse",
-  },
-  {
-    type: "Historico",
-    nomePet: "Porquinho",
-    nomeDono: "Marco",
-    nomeDr: "Fernanda",
-    data: "21/11",
-    horario: "09:00",
-    tipoPet: "pig",
-  },
-] as const;
+type Consultation = {
+  type: string;
+  nomePet: string;
+  nomeDono: string;
+  nomeDr: string;
+  data: string;
+  horario: string;
+  tipoPet: string;
+};
 
 const App = () => {
+  const [loading, setLoading] = React.useState(false);
+  const [consultations, setConsultations] = React.useState<Consultation[]>([]);
+
+  useEffect(() => {
+    const fetchConsultations = async () => {
+      try {
+        setLoading(true);
+        const response = await api.get("/consultation/cards");
+        const mapped = response.data.map((item: any) => ({
+          type: item.tipo,
+          nomePet: item.paciente.nomeDoAnimal,
+          nomeDono: item.paciente.nomeDono,
+          nomeDr: item.medico,
+          data: item.data,
+          horario: item.hora,
+          tipoPet: item.paciente.especie,
+        }));
+        setConsultations(mapped);
+      } catch (error) {
+        console.error("Erro ao buscar consultas:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchConsultations();
+  }, []);
+
   type FiltroHora = "" | "Sun" | "cloud" | "lua";
   const [selecionado, setSelecionado] = useState<FiltroHora>("");
 
@@ -65,6 +56,35 @@ const App = () => {
     // recebe hora e minutos e transforma em minutos totais pra fazer o filtro de manha tarde e noite
     const [h, m] = hora.split(":").map(Number);
     return h * 60 + m;
+  };
+
+  const parseDateParts = (dateStr: string) => {
+    if (!dateStr) return null;
+
+    if (dateStr.includes("/")) {
+      const parts = dateStr.split("/");
+
+      // formato DD/MM — assume o ano atual
+      const day = Number(parts[0]);
+      const month = Number(parts[1]);
+      const year = new Date().getFullYear();
+      if (!Number.isNaN(year) && !Number.isNaN(month) && !Number.isNaN(day)) {
+        return { year, month, day };
+      }
+    }
+
+    return null;
+  };
+
+  const isTodayDate = (dateStr: string) => {
+    const parts = parseDateParts(dateStr);
+    if (!parts) return false;
+    const today = new Date();
+    return (
+      parts.year === today.getFullYear() &&
+      parts.month === today.getMonth() + 1 &&
+      parts.day === today.getDate()
+    );
   };
 
   const ranges: Record<
@@ -77,11 +97,14 @@ const App = () => {
   };
 
   const filteredCards = (() => {
-    if (!selecionado) return cardsMock;
+    // primeiro filtra apenas consultas do dia de hoje
+    const todayCards = consultations.filter((c) => isTodayDate(c.data));
+
+    if (!selecionado) return todayCards;
 
     const range = ranges[selecionado];
 
-    return cardsMock.filter((c) => {
+    return todayCards.filter((c) => {
       const minutos = toMinutes(c.horario);
       return minutos >= range.start && minutos <= range.end;
     });
@@ -133,7 +156,7 @@ const App = () => {
           className="mt-[39px]"
         >
           {filteredCards.map((card, idx) => (
-            <PetCard key={idx} {...card} />
+            <PetCard key={idx} {...(card as any)} />
           ))}
         </ScrollView>
       </View>

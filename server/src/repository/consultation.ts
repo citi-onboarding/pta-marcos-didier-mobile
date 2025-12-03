@@ -8,6 +8,7 @@ export class consultationRepository {
     try {
       const consultations = await prisma.consulta.findMany({
         select: {
+          id: true,
           data: true,
           hora: true,
           medico: true,
@@ -57,6 +58,7 @@ export class consultationRepository {
         // a variavel consulta guarda os dados da consulta e do paciente (com id pra usar dps)
         where: { id: Number(consultationId) },
         select: {
+          id: true,
           medico: true,
           descricao: true,
           tipo: true,
@@ -89,9 +91,11 @@ export class consultationRepository {
         // return formatado
         paciente: consulta.paciente,
         consulta: {
+          id: consulta.id,
           medico: consulta.medico,
           descricao: consulta.descricao,
           tipo: consulta.tipo,
+          idPaciente: consulta.idPaciente,
         },
         historico,
       };
@@ -100,6 +104,35 @@ export class consultationRepository {
         "Erro ao buscar detalhes da consulta e histórico do paciente:",
         error
       );
+      throw error;
+    }
+  }
+
+  async getCardsByDr(drName: string) {
+    try {
+      const consultations = await prisma.consulta.findMany({
+        where: {
+          medico: drName,
+        },
+        select: {
+          id: true,
+          data: true,
+          hora: true,
+          medico: true,
+          tipo: true,
+          paciente: {
+            select: {
+              idade: true,
+              especie: true,
+              nomeDono: true,
+              nomeDoAnimal: true,
+            },
+          },
+        },
+      });
+      return consultations;
+    } catch (error) {
+      console.error("Erro ao retornar todas as consultas:", error);
       throw error;
     }
   }
