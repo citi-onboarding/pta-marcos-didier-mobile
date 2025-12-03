@@ -4,55 +4,78 @@ import NavBar from "@/components/Navbar";
 import Image from "next/image";
 import arrow from "@/assets/arrow_back.svg";
 import Cat from "@/assets/cat.svg";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ModalNovaConsulta from "@/components/modalnovaconsulta";
 import Botao2 from "@/components/Botao2";
 import CardConsulta from "@/components/CardConsulta";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { set } from "date-fns";
+import api from "@/services/api";
+import cat from "@/assets/cat.svg";
+import dog from "@/assets/dog.png";
+import sheep from "@/assets/sheep.svg";
+import horse from "@/assets/horse.svg";
+import pig from "@/assets/pig.svg";
+import cow from "@/assets/cow.svg";
 
 export default function DetalheConsulta() {
-  const consultaMock = [
-    {
-      data: "20/11",
-      time: "11:00",
-      type_appointment: "First Consulta",
-      doctorName: "Dr. Marcelo",
-    },
-    {
-      data: "20/11",
-      time: "11:00",
-      type_appointment: "First Consulta",
-      doctorName: "Dr. Marcelo",
-    },
+  const [loading, setLoading] = React.useState(false);
+  const [consultaDetails, setConsultaDetails] = useState<any | null>(null);
+  const [history, setHistory] = useState<any[]>([]);
+  const params = useParams() as { ID?: string; id?: string };
+  const id = params.ID ?? params.id; // isso pega o id da pagina
 
-    {
-      data: "20/11",
-      time: "11:00",
-      type_appointment: "First Consulta",
-      doctorName: "Dr. Marcelo",
-    },
+  const colorMap: Record<string, string> = {
+    Retorno: "bg-[#FF641999]",
+    PrimeiraConsulta: "bg-[#BFB5FF]",
+    Vacinacao: "bg-[#AAE1FF]",
+    CheckUp: "bg-[#9CFF95]",
+  };
 
-    {
-      data: "20/11",
-      time: "11:00",
-      type_appointment: "First Consulta",
-      doctorName: "Dr. Marcelo",
-    },
+  const imgsporpet: Record<string, any> = {
+    Gato: cat,
+    Cachorro: dog,
+    Bode: sheep,
+    Girafa: cow,
+    Cavalo: horse,
+    Porco: pig,
+  };
 
-    {
-      data: "20/11",
-      time: "11:00",
-      type_appointment: "First Consulta",
-      doctorName: "Dr. Marcelo",
-    },
+  useEffect(() => {
+    async function fetchConsultaDetails() {
+      try {
+        setLoading(true);
+        const response = await api.get(`/consultation/details/${id}`);
+        const data = response.data;
+        const mappedDetails = {
+          petName: data.paciente.nomeDoAnimal,
+          petAge: data.paciente.idade,
+          ownerName: data.paciente.nomeDono,
+          petSpecies: data.paciente.especie, // <-- precisa ter isso
+          doctorName: data.consulta.medico,
+          problemDescription: data.consulta.descricao,
+          consultationType: data.consulta.tipo,
+        };
 
-    {
-      data: "20/11",
-      time: "11:00",
-      type_appointment: "First Consulta",
-      doctorName: "Dr. Marcelo",
-    },
-  ];
+        const mappedHistory = Array.isArray(data.historico)
+          ? data.historico.map((item: any) => ({
+              date: item.data,
+              time: item.hora,
+              type_appointment: item.tipo,
+              doctorName: item.medico,
+            }))
+          : [id];
+
+        setConsultaDetails(mappedDetails);
+        setHistory(mappedHistory);
+      } catch (error) {
+        console.error("Erro ao buscar detalhes da consulta:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchConsultaDetails();
+  }, [id]);
 
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const router = useRouter();
@@ -64,11 +87,11 @@ export default function DetalheConsulta() {
           <NavBar />
           <div className="h-px w-full bg-gray-200" role="separator" />
         </div>
-        
+
         <div className="w-full px-4 sm:px-8 lg:px-[165px]">
           <div className="pt-[40px] w-full">
             <div className="flex items-center">
-              <div 
+              <div
                 className="w-6 h-6 sm:w-8 sm:h-8 cursor-pointer"
                 onClick={() => router.back()}
               >
@@ -84,14 +107,16 @@ export default function DetalheConsulta() {
             <div className="flex flex-col xl:flex-row xl:gap-20">
               <div className="flex flex-col flex-1">
                 <div className="w-full">
-                  <span className="font-bold text-lg sm:text-xl lg:text-2xl">Paciente</span>
+                  <span className="font-bold text-lg sm:text-xl lg:text-2xl">
+                    Paciente
+                  </span>
                 </div>
 
                 <div className="flex flex-col sm:flex-row items-center sm:items-start mt-6 sm:mt-8 gap-4 sm:gap-6">
                   <div className="w-48 h-48 sm:w-56 sm:h-56 lg:w-[295px] lg:h-[299px] flex-shrink-0">
                     <Image
-                      src={Cat}
-                      alt="Cat"
+                      src={imgsporpet[consultaDetails?.petSpecies]}
+                      alt={consultaDetails?.petSpecies}
                       width={295}
                       height={299}
                       className="w-full h-full object-cover rounded-lg"
@@ -99,14 +124,22 @@ export default function DetalheConsulta() {
                   </div>
                   <div className="sm:ml-6 mt-4 sm:mt-10 lg:mt-14 text-center sm:text-left">
                     <div>
-                      <span className="font-bold text-lg sm:text-xl lg:text-2xl">Luna</span>
+                      <span className="font-bold text-lg sm:text-xl lg:text-2xl">
+                        {consultaDetails?.petName || "Nome do Pet"}
+                      </span>
                     </div>
                     <div className="mt-2 sm:mt-3">
-                      <span className="text-base sm:text-lg lg:text-xl text-gray-700">5 anos</span>
+                      <span className="text-base sm:text-lg lg:text-xl text-gray-700">
+                        {consultaDetails?.petAge || "Idade do Pet"} anos
+                      </span>
                     </div>
                     <div className="mt-8 sm:mt-16 lg:mt-28 w-full flex flex-col gap-2">
-                      <span className="text-sm sm:text-base text-gray-600">Lucas Gomes</span>
-                      <span className="text-sm sm:text-base text-gray-600">Dr. Carlos</span>
+                      <span className="text-sm sm:text-base text-gray-600">
+                        {consultaDetails?.ownerName || "Nome do Dono"}
+                      </span>
+                      <span className="text-sm sm:text-base text-gray-600">
+                        Dr. {consultaDetails?.doctorName}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -116,11 +149,8 @@ export default function DetalheConsulta() {
                     Descrição do problema:
                   </div>
                   <div className="mt-3 text-sm sm:text-base text-gray-700 leading-relaxed">
-                    Lorem Ipsum is simply dummy text of the printing and typesetting
-                    industry. Lorem Ipsum has been the industry's standard dummy
-                    text ever since the 1500s, when an unknown printer took a galley
-                    of type and scrambled it to make a type specimen book. It has
-                    survived not only five centuries.
+                    {consultaDetails?.problemDescription ||
+                      "Descrição detalhada do problema apresentado pelo pet durante a consulta."}
                   </div>
                 </div>
 
@@ -128,8 +158,16 @@ export default function DetalheConsulta() {
                   <div className="font-bold text-base sm:text-lg">
                     Tipo de Consulta:
                   </div>
-                  <div className="w-fit px-4 h-8 bg-[#AAE1FF] flex items-center justify-center rounded-md">
-                    <span className="text-sm sm:text-base">Vacinação</span>
+                  <div
+                    className={`w-fit px-4 h-8 ${
+                      colorMap[
+                        consultaDetails?.consultationType || "bg-transparent"
+                      ]
+                    } flex items-center justify-center rounded-md`}
+                  >
+                    <span className="text-sm sm:text-base">
+                      {consultaDetails?.consultationType}
+                    </span>
                   </div>
                 </div>
 
@@ -152,7 +190,7 @@ export default function DetalheConsulta() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="w-full xl:max-w-[558px] mt-8 xl:mt-0">
                 <div>
                   <span className="font-bold text-lg sm:text-xl lg:text-[24px]">
@@ -161,7 +199,7 @@ export default function DetalheConsulta() {
                 </div>
 
                 <div className="grid grid-cols-1 gap-y-4 sm:gap-y-6 w-full mt-6 rounded-[24px] border border-dashed border-gray-300 justify-items-center pt-6 pb-6 min-h-[300px]">
-                  {consultaMock.slice(0, 4).map((card, idx) => (
+                  {history.slice(0, 4).map((card, idx) => (
                     <CardConsulta key={idx} {...card} />
                   ))}
                 </div>
