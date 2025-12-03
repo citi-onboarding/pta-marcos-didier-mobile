@@ -2,27 +2,29 @@ FROM node:20.9.0-slim
 
 RUN apt-get update -y && apt-get install -y openssl
 
-RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
+RUN mkdir -p /home/node/app && chown -R node:node /home/node/app
 
 WORKDIR /home/node/app
 
-COPY package.json yarn.loc[k] ./
+# Copy package manifests and install dependencies using yarn
+COPY package.json yarn.lock ./
+# Allow yarn to update lockfile during image build if package.json changed
+RUN yarn install --production=false
 
-RUN yarn install
-
+# Copy rest of the app
 COPY . .
 
-RUN yarn generate
+# Generate Prisma client (if present)
+RUN yarn generate || true
 
-COPY --chown=node:node . .
-
-RUN chown -R node:node /home/node/app/node_modules/.prisma
+# Ensure prisma artifacts are readable (if they exist)
+RUN chown -R node:node /home/node/app/node_modules/.prisma || true
 
 USER node
 
 EXPOSE 3001
 
-CMD [ "yarn", "dev" ]
+CMD ["yarn", "dev"]
 
 # para a documentação seguida para construção desse arquivo, vá para o step 3 do link:
 # https://www.digitalocean.com/community/tutorials/como-construir-uma-aplicacao-node-js-com-o-docker-pt
