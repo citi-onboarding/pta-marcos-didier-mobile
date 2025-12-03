@@ -93,8 +93,6 @@ export default function DetalheConsulta() {
         })
         : [];
 
-          {console.log(data.historico)}
-
         setConsultaDetails(mappedDetails);
         setHistory(mappedHistory);
       } catch (error) {
