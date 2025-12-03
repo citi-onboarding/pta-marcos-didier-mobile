@@ -59,14 +59,41 @@ export default function DetalheConsulta() {
         };
 
         const mappedHistory = Array.isArray(data.historico)
-          ? data.historico.map((item: any) => ({
-              id: item.id,
-              date: item.data,
-              time: item.hora,
-              type_appointment: item.tipo,
-              doctorName: item.medico,
-            }))
-          : [id];
+        ? data.historico
+          .map((item: any) => ({
+            id: item.id || Math.random().toString(), // Fallback se não tiver ID
+            date: item.data, // "05/12"
+            time: item.hora, // "17:00"
+            type_appointment: item.tipo,
+            doctorName: item.medico,
+          }))
+          .filter((item) => {
+            // 1. Monta a data completa usando o Ano Atual
+            const [dia, mes] = item.date.split('/');
+            const anoAtual = new Date().getFullYear();
+        
+            // Formato ISO: YYYY-MM-DDTHH:mm
+            const dataCompleta = new Date(`${anoAtual}-${mes}-${dia}T${item.time}`);
+        
+            // Retorna true se a data for MENOR que agora (Passado)
+            return dataCompleta < new Date();
+          })
+          .sort((a, b) => {
+          // 2. Mesma lógica para ordenar
+          const anoAtual = new Date().getFullYear();
+        
+          const [diaA, mesA] = a.date.split('/');
+          const dataA = new Date(`${anoAtual}-${mesA}-${diaA}T${a.time}`);
+
+          const [diaB, mesB] = b.date.split('/');
+          const dataB = new Date(`${anoAtual}-${mesB}-${diaB}T${b.time}`);
+
+          // Ordem decrescente (mais recente primeiro)
+          return dataB.getTime() - dataA.getTime();
+        })
+        : [];
+
+          {console.log(data.historico)}
 
         setConsultaDetails(mappedDetails);
         setHistory(mappedHistory);
