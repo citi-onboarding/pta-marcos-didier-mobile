@@ -25,6 +25,13 @@ export default function DetalheConsulta() {
   const params = useParams() as { ID?: string; id?: string };
   const id = params.ID ?? params.id; // isso pega o id da pagina
 
+  const typemap: Record<string, string> = {
+    Retorno: "Retorno",
+    PrimeiraConsulta: "Primeira Consulta",
+    Vacinacao: "Vacinação",
+    CheckUp: "Check-up",
+  };
+
   const colorMap: Record<string, string> = {
     Retorno: "bg-[#FF641999]",
     PrimeiraConsulta: "bg-[#BFB5FF]",
@@ -168,7 +175,7 @@ export default function DetalheConsulta() {
                     } flex items-center justify-center rounded-md`}
                   >
                     <span className="text-sm sm:text-base">
-                      {consultaDetails?.consultationType}
+                      {typemap[consultaDetails?.consultationType]}
                     </span>
                   </div>
                 </div>

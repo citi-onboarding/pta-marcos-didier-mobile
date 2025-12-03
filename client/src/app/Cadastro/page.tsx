@@ -131,7 +131,7 @@ export default function Cadastro() {
   }
 
   return (
-    <div className="flex flex-1 flex-col bg-[#FFFFFF] min-h-screen">
+    <div className="flex flex-1 flex-col bg-[#FFFFFF] min-h-screen overflow-x-hidden">
       <div className="w-full flex flex-col">
         <div className="w-full">
           <NavBar />

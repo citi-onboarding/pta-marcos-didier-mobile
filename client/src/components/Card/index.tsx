@@ -23,6 +23,13 @@ const colorMap: Record<string, string> = {
   CheckUp: "bg-[#9CFF95]",
 };
 
+const typemap: Record<string, string> = {
+  Retorno: "Retorno",
+  PrimeiraConsulta: "Primeira Consulta",
+  Vacinacao: "Vacinação",
+  CheckUp: "Check-up",
+};
+
 export default function Card(props: CardProps) {
   const {
     id,
@@ -53,36 +60,34 @@ export default function Card(props: CardProps) {
       onClick={handleClick}
     >
       <div className="w-[51px] h-[90px] bg-[#FFFFFFCC] rounded-[4px] flex flex-col items-center justify-center flex-shrink-0">
-        <Image
-          src={alarm}
-          alt="Alarme"
-          className="w-[20px] h-[20px] mb-1"
-        />
-        <div className="font-bold text-[12px] sm:text-[14px] mb-1">
-          {date}
-        </div>
-        <div className="font-bold text-[12px] sm:text-[14px]">
-          {time}
-        </div>
+        <Image src={alarm} alt="Alarme" className="w-[20px] h-[20px] mb-1" />
+        <div className="font-bold text-[12px] sm:text-[14px] mb-1">{date}</div>
+        <div className="font-bold text-[12px] sm:text-[14px]">{time}</div>
       </div>
 
       <div className="flex-1 min-w-0 text-center sm:text-left">
         <div className="mb-2 sm:mb-0">
-          <span className="font-bold text-[12px] sm:text-[14px]">{patientName} </span>
+          <span className="font-bold text-[12px] sm:text-[14px]">
+            {patientName}{" "}
+          </span>
           <span className="text-[12px] sm:text-[14px]">/ {ownerName}</span>
         </div>
-        <div className="text-[12px] sm:text-[14px] text-center sm:text-left">Dr {doctorName}</div>
+        <div className="text-[12px] sm:text-[14px] text-center sm:text-left">
+          Dr {doctorName}
+        </div>
       </div>
 
-      <div className={`w-[101px] h-[103px] rounded-[8px] relative flex-shrink-0`}>
+      <div
+        className={`w-[101px] h-[103px] rounded-[8px] relative flex-shrink-0`}
+      >
         <Image
           src={animalIcon}
           alt="Animal"
           className="w-[69px] h-[70px] ml-[16px] object-cover"
         />
-        <div className="absolute bottom-0 left-0 w-[101px] h-[25px] rounded-[4px] bg-[#FFFFFFCC] flex items-center justify-center">
+        <div className="absolute bottom-0 left-0 w-[110px] h-[25px] rounded-[4px] bg-[#FFFFFFCC] flex items-center justify-center">
           <div className="text-black text-center truncate w-full text-[10px] sm:text-[12px] px-1">
-            {type_appointment}
+            {typemap[type_appointment]}
           </div>
         </div>
       </div>
